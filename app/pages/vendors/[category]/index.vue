@@ -26,12 +26,10 @@
             <div class="container">
                 <div class="vendorCat__grid">
                     <NuxtLink
-                        v-for="v in vendor"
+                        v-for="v in vendors"
                         :key="v.slug"
                         :to="
-                            localePath(
-                                `/vendors/${category.slug[locale]}/${v.slug}`,
-                            )
+                            localePath(`/vendors/${category.slug[L]}/${v.slug}`)
                         "
                         class="vendorCat__card card"
                     >
@@ -85,33 +83,33 @@ const category = computed(() => {
     return found;
 });
 
-const { getVendorByCategoryKeyAndSlug } = useListings();
+const { getVendorsByCategoryKey } = useListings();
 
-const vendor = computed(() => {
-    const slug = String(route.params.slug || "");
+const vendors = computed(() => {
     const key = category.value.key;
+    const list = getVendorsByCategoryKey(key);
 
-    const found = getVendorByCategoryKeyAndSlug(key, slug);
-
-    if (!found) {
+    if (!list.length) {
         throw createError({
             statusCode: 404,
-            statusMessage: "Vendor not found",
+            statusMessage: "No vendors found",
         });
     }
 
-    return found;
+    return list;
 });
 
-const heroImage = computed(() => {
-    const imgs = vendor.value.images ?? [];
-    return imgs.find((i) => i.type === "hero") ?? imgs[0] ?? null;
+const heroImage = computed(() => null);
+
+const seoTitle = computed(() => {
+    return `${category.value.label[L.value]} • ${t("seo.siteTitle")}`;
 });
 
-const seoTitle = computed(
-    () => `${vendor.value.name[L.value]} • ${t("seo.siteTitle")}`,
-);
-const seoDescription = computed(() => vendor.value.description[L.value]);
+const seoDescription = computed(() => {
+    return L.value === "es"
+        ? `Encuentra ${category.value.label[L.value].toLowerCase()} para bodas en San Miguel de Allende.`
+        : `Find ${category.value.label[L.value].toLowerCase()} for weddings in San Miguel de Allende.`;
+});
 
 useSeoMeta({
     title: seoTitle,
