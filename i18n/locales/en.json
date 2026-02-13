@@ -1,0 +1,48 @@
+{
+  "brand": {
+    "name": "San Miguel Wedding Venues"
+  },
+  "nav": {
+    "venues": "Wedding Venues",
+    "vendors": "Vendors",
+    "blog": "Blog",
+    "advertise": "Advertise",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "heroTitle": "Bilingual wedding venue & vendor directory for San Miguel de Allende",
+    "heroSubtitle": "Find venues, planners, florists, photographers, catering, rentals, and more — with listings in English and Spanish.",
+    "primaryCta": "Browse wedding venues",
+    "secondaryCta": "Browse vendors",
+    "featuredVenues": "Featured venues",
+    "browseByCategory": "Browse by category"
+  },
+  "directory": {
+    "featured": "Featured",
+    "viewDetails": "View details",
+    "website": "Website",
+    "instagram": "Instagram",
+    "phone": "Phone",
+    "email": "Email"
+  },
+  "categories": {
+    "venues": "Wedding venues",
+    "vendors": "Vendors",
+    "planner": "Wedding planners",
+    "caterer": "Caterers",
+    "florist": "Florists",
+    "photographer": "Photographers",
+    "videographer": "Videographers",
+    "rentals": "Rentals",
+    "music": "DJs & bands",
+    "beauty": "Hair & makeup",
+    "officiant": "Officiants",
+    "transport": "Transportation",
+    "stationery": "Stationery"
+  },
+  "seo": {
+    "siteTitle": "San Miguel Wedding Venues",
+    "siteDescription": "Bilingual directory of wedding venues and wedding vendors in San Miguel de Allende."
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "brand": {
+    "name": "Lugares para Bodas en San Miguel"
+  },
+  "nav": {
+    "venues": "Lugares para bodas",
+    "vendors": "Proveedores",
+    "blog": "Blog",
+    "advertise": "Publicidad",
+    "about": "Acerca",
+    "contact": "Contacto"
+  },
+  "home": {
+    "heroTitle": "Directorio bilingüe de lugares y proveedores de bodas en San Miguel de Allende",
+    "heroSubtitle": "Encuentra lugares, organizadores, floristas, fotógrafos, banquetes, renta de mobiliario y más — en inglés y español.",
+    "primaryCta": "Ver lugares para bodas",
+    "secondaryCta": "Ver proveedores",
+    "featuredVenues": "Lugares destacados",
+    "browseByCategory": "Explorar por categoría"
+  },
+  "directory": {
+    "featured": "Destacado",
+    "viewDetails": "Ver detalles",
+    "website": "Sitio web",
+    "instagram": "Instagram",
+    "phone": "Teléfono",
+    "email": "Correo"
+  },
+  "categories": {
+    "venues": "Lugares para bodas",
+    "vendors": "Proveedores",
+    "planner": "Organizadores de bodas",
+    "caterer": "Banquetes",
+    "florist": "Floristas",
+    "photographer": "Fotógrafos",
+    "videographer": "Videógrafos",
+    "rentals": "Renta de mobiliario",
+    "music": "DJ y grupos",
+    "beauty": "Peinado y maquillaje",
+    "officiant": "Oficiantes",
+    "transport": "Transporte",
+    "stationery": "Papelería"
+  },
+  "seo": {
+    "siteTitle": "Lugares para Bodas en San Miguel",
+    "siteDescription": "Directorio bilingüe de lugares para bodas y proveedores en San Miguel de Allende."
+  }
+}
