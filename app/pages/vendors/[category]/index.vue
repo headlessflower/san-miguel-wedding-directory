@@ -66,6 +66,7 @@ type Locale = "en" | "es";
 
 const { t, locale } = useI18n();
 const route = useRoute();
+const localePath = useLocalePath();
 
 const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
