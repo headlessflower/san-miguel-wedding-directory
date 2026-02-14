@@ -121,6 +121,13 @@ export interface VendorListing extends ListingBase {
     es: string[];
   };
 
+  address?: {
+    street?: string;
+    city?: string;
+    region?: string;
+    country?: string;
+    postalCode?: string;
+  };
   // Monetization hooks
   isVerified?: boolean;
   isClaimed?: boolean;
@@ -437,34 +444,159 @@ export const SEED_VENUES: VenueListing[] = [
  */
 export const SEED_VENDORS: VendorListing[] = [
   {
-    id: "vendor_planner_demo_1",
+    id: "vendor_planner_1",
     type: "vendor",
     categoryKey: "planner",
-    slug: "demo-1",
+    slug: "atelier-planner-demo",
     featured: true,
-    name: { en: "Demo Wedding Planner", es: "Organizador Demo" },
+    name: {
+      en: "Atelier Wedding Planning (Demo)",
+      es: "Atelier Wedding Planning (Demo)",
+    },
     description: {
-      en: "Sample vendor listing to validate routing.",
-      es: "Listado de ejemplo para validar rutas.",
+      en: "Full-service destination wedding planning with timeline, vendor coordination, and design support in San Miguel de Allende.",
+      es: "Planificación completa de bodas de destino con cronograma, coordinación de proveedores y apoyo de diseño en San Miguel de Allende.",
     },
     website: "",
     instagram: "",
     images: [],
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Guanajuato"],
+      es: ["San Miguel de Allende", "Guanajuato"],
+    },
+    isVerified: false,
+    isClaimed: false,
+  },
+
+  {
+    id: "vendor_planner_2",
+    type: "vendor",
+    categoryKey: "planner",
+    slug: "centro-celebrations-demo",
+    featured: false,
+    name: {
+      en: "Centro Celebrations (Demo)",
+      es: "Centro Celebrations (Demo)",
+    },
+    description: {
+      en: "Planning + coordination focused on intimate weddings, rooftop receptions, and multi-day guest experiences.",
+      es: "Planificación y coordinación enfocada en bodas íntimas, recepciones en terraza y experiencias de varios días.",
+    },
+    website: "",
+    instagram: "",
+    images: [],
+    serviceAreas: {
+      en: ["San Miguel de Allende"],
+      es: ["San Miguel de Allende"],
+    },
+    isVerified: false,
+    isClaimed: false,
+  },
+
+  {
+    id: "vendor_planner_3",
+    type: "vendor",
+    categoryKey: "planner",
+    slug: "garden-to-candlelight-demo",
+    featured: false,
+    name: {
+      en: "Garden to Candlelight Events (Demo)",
+      es: "Garden to Candlelight Events (Demo)",
+    },
+    description: {
+      en: "Design-forward planning with vendor curation, styling, and on-site production for weekend weddings.",
+      es: "Planificación con enfoque en diseño, curaduría de proveedores, styling y producción en sitio para bodas de fin de semana.",
+    },
+    website: "",
+    instagram: "",
+    images: [],
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Querétaro"],
+      es: ["San Miguel de Allende", "Querétaro"],
+    },
+    isVerified: false,
+    isClaimed: false,
+  },
+
+  {
+    id: "vendor_planner_4",
+    type: "vendor",
+    categoryKey: "planner",
+    slug: "hacienda-weekend-coordinator-demo",
+    featured: false,
+    name: {
+      en: "Hacienda Weekend Coordinator (Demo)",
+      es: "Coordinación Hacienda Weekend (Demo)",
+    },
+    description: {
+      en: "Practical planning for larger guest counts: logistics, transportation, load-in schedules, and vendor management.",
+      es: "Planificación práctica para bodas grandes: logística, transporte, horarios de montaje y manejo de proveedores.",
+    },
+    website: "",
+    instagram: "",
+    images: [],
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Guanajuato"],
+      es: ["San Miguel de Allende", "Guanajuato"],
+    },
+    isVerified: false,
+    isClaimed: false,
+  },
+
+  {
+    id: "vendor_planner_5",
+    type: "vendor",
+    categoryKey: "planner",
+    slug: "minimal-modern-weddings-demo",
+    featured: false,
+    name: {
+      en: "Minimal Modern Weddings (Demo)",
+      es: "Bodas Minimal Modern (Demo)",
+    },
+    description: {
+      en: "Planning and coordination for modern couples: clean design, efficient timelines, and bilingual communication.",
+      es: "Planificación y coordinación para parejas modernas: diseño limpio, cronogramas eficientes y comunicación bilingüe.",
+    },
+    website: "",
+    instagram: "",
+    images: [],
+    serviceAreas: {
+      en: ["San Miguel de Allende"],
+      es: ["San Miguel de Allende"],
+    },
+    isVerified: false,
+    isClaimed: false,
   },
   {
-    id: "vendor_planner_demo_2",
+    id: "vendor_florist_1",
     type: "vendor",
-    categoryKey: "planner",
-    slug: "demo-2",
-    featured: false,
-    name: { en: "Demo Vendor Two", es: "Proveedor Demo Dos" },
-    description: {
-      en: "Replace with real businesses during data seeding.",
-      es: "Reemplaza con negocios reales al cargar datos.",
+    categoryKey: "florist",
+    slug: "flor-de-castilla",
+    featured: true,
+    name: {
+      en: "Flor de Castilla",
+      es: "Flor de Castilla",
     },
-    website: "",
-    instagram: "",
-    images: [],
+    description: {
+      en: "Luxury floral design studio known for romantic arches and organic installations.",
+      es: "Estudio de diseño floral de lujo conocido por arcos románticos e instalaciones orgánicas.",
+    },
+    website: "https://example.com",
+    instagram: "https://instagram.com/example",
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Dolores Hidalgo"],
+      es: ["San Miguel de Allende", "Dolores Hidalgo"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/flor-de-castilla-hero.jpg",
+        alt: {
+          en: "Floral wedding arch installation in San Miguel de Allende",
+          es: "Arco floral para boda en San Miguel de Allende",
+        },
+      },
+    ],
   },
 ];
 

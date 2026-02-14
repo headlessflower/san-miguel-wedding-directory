@@ -24,6 +24,19 @@
 
         <section class="vendorCat__section">
             <div class="container">
+                <div
+                    v-if="category.intro?.[L]?.length"
+                    class="vendorCat__intro"
+                >
+                    <p
+                        v-for="(p, i) in category.intro[L]"
+                        :key="i"
+                        class="vendorCat__introP"
+                    >
+                        {{ p }}
+                    </p>
+                </div>
+
                 <div class="vendorCat__grid">
                     <NuxtLink
                         v-for="v in vendors"
@@ -54,6 +67,14 @@
                         </div>
                     </NuxtLink>
                 </div>
+                <CategoryFaq
+                    :title="
+                        L === 'es'
+                            ? 'Preguntas frecuentes'
+                            : 'Frequently asked questions'
+                    "
+                    :items="category.faq?.[L]"
+                />
             </div>
         </section>
     </main>
@@ -61,6 +82,9 @@
 
 <script setup lang="ts">
 import { getVendorCategoryBySlug } from "~/data/taxonomies";
+
+const config = useRuntimeConfig();
+const siteUrl = (config.public?.siteUrl as string) || "";
 
 type Locale = "en" | "es";
 
@@ -88,16 +112,10 @@ const { getVendorsByCategoryKey } = useListings();
 
 const vendors = computed(() => {
     const key = category.value.key;
-    const list = getVendorsByCategoryKey(key);
-
-    if (!list.length) {
-        throw createError({
-            statusCode: 404,
-            statusMessage: "No vendors found",
-        });
-    }
-
-    return list;
+    const list = getVendorsByCategoryKey(category.value.key);
+    return [...list].sort(
+        (a, b) => Number(!!b.featured) - Number(!!a.featured),
+    );
 });
 
 const heroImage = computed(() => null);
@@ -117,6 +135,61 @@ useSeoMeta({
     description: seoDescription,
     ogTitle: seoTitle,
     ogDescription: seoDescription,
+});
+
+useHead(() => {
+    const isEs = L.value === "es";
+    const prefix = isEs ? "/es" : "/en";
+    const catUrl = siteUrl
+        ? `${siteUrl}${prefix}/vendors/${category.value.slug[L.value]}`
+        : undefined;
+
+    const jsonLd: Record<string, unknown> = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: category.value.label[L.value],
+        ...(catUrl ? { url: catUrl } : {}),
+        itemListElement: vendors.value.map((v, idx) => {
+            const loc = `${prefix}/vendors/${category.value.slug[L.value]}/${v.slug}`;
+            return {
+                "@type": "ListItem",
+                position: idx + 1,
+                name: v.name[L.value],
+                ...(siteUrl ? { url: `${siteUrl}${loc}` } : { url: loc }),
+            };
+        }),
+    };
+
+    return {
+        script: [
+            { type: "application/ld+json", children: JSON.stringify(jsonLd) },
+        ],
+    };
+});
+
+const faqItems = computed(() => category.value.faq?.[L.value] ?? []);
+
+useHead(() => {
+    if (!faqItems.value.length) return {};
+
+    const faqJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqItems.value.map((it) => ({
+            "@type": "Question",
+            name: it.q,
+            acceptedAnswer: { "@type": "Answer", text: it.a },
+        })),
+    };
+
+    return {
+        script: [
+            {
+                type: "application/ld+json",
+                children: JSON.stringify(faqJsonLd),
+            },
+        ],
+    };
 });
 </script>
 
@@ -199,5 +272,12 @@ useSeoMeta({
     font-size: 13px;
     font-weight: 900;
     color: rgba(20, 20, 20, 0.8);
+}
+.vendorCat__intro {
+    margin-top: var(--s-4);
+    max-width: 75ch;
+}
+.vendorCat__introP {
+    margin-top: var(--s-3);
 }
 </style>

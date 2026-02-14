@@ -8,7 +8,43 @@
                 >
                     ← {{ locale === "es" ? "Regresar" : "Back" }}
                 </NuxtLink>
-
+                <nav class="crumbs" aria-label="Breadcrumb">
+                    <ol class="crumbs__list">
+                        <li class="crumbs__item">
+                            <NuxtLink
+                                :to="localePath('/')"
+                                class="crumbs__link"
+                            >
+                                {{ L === "es" ? "Inicio" : "Home" }}
+                            </NuxtLink>
+                        </li>
+                        <li class="crumbs__sep">/</li>
+                        <li class="crumbs__item">
+                            <NuxtLink
+                                :to="localePath('/vendors')"
+                                class="crumbs__link"
+                            >
+                                {{ L === "es" ? "Proveedores" : "Vendors" }}
+                            </NuxtLink>
+                        </li>
+                        <li class="crumbs__sep">/</li>
+                        <li class="crumbs__item">
+                            <NuxtLink
+                                :to="localePath(`/vendors/${category.slug[L]}`)"
+                                class="crumbs__link"
+                            >
+                                {{ category.label[L] }}
+                            </NuxtLink>
+                        </li>
+                        <li class="crumbs__sep">/</li>
+                        <li
+                            class="crumbs__item crumbs__item--current"
+                            aria-current="page"
+                        >
+                            {{ vendor.name[L] }}
+                        </li>
+                    </ol>
+                </nav>
                 <div class="vendor__heroTop">
                     <h1 class="vendor__title">{{ vendor.name[locale] }}</h1>
                     <span
@@ -75,25 +111,22 @@ type Locale = "en" | "es";
 
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
-const switchLocalePath = useSwitchLocalePath();
 const route = useRoute();
-const L = computed(() => (locale.value as Locale) || "en");
 
-const { getVenueBySlug } = useListings();
-const seoTitle = computed(
-    () => `${vendor.value.name[L.value]} • ${t("seo.siteTitle")}`,
-);
-const seoDescription = computed(() => vendor.value.description[L.value]);
+const siteUrl = (useRuntimeConfig().public?.siteUrl as string) || "";
+const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const category = computed(() => {
-    const l = (locale.value as Locale) || "en";
     const slug = String(route.params.category || "");
-    const found = getVendorCategoryBySlug(l, slug);
-    if (!found)
+    const found = getVendorCategoryBySlug(L.value, slug);
+
+    if (!found) {
         throw createError({
             statusCode: 404,
             statusMessage: "Category not found",
         });
+    }
+
     return found;
 });
 
@@ -101,21 +134,122 @@ const { getVendorByCategoryKeyAndSlug } = useListings();
 
 const vendor = computed(() => {
     const slug = String(route.params.slug || "");
-    const key = category.value.key;
-    const found = getVendorByCategoryKeyAndSlug(key, slug);
-    if (!found)
+    const found = getVendorByCategoryKeyAndSlug(category.value.key, slug);
+
+    if (!found) {
         throw createError({
             statusCode: 404,
             statusMessage: "Vendor not found",
         });
+    }
+
     return found;
 });
+
+const seoTitle = computed(
+    () => `${vendor.value.name[L.value]} • ${t("seo.siteTitle")}`,
+);
+const seoDescription = computed(() => vendor.value.description[L.value]);
 
 useSeoMeta({
     title: seoTitle,
     description: seoDescription,
     ogTitle: seoTitle,
     ogDescription: seoDescription,
+});
+
+useHead(() => {
+    const v = vendor.value;
+    const base = siteUrl;
+
+    // ---------- LocalBusiness ----------
+    const url = base
+        ? `${base}/${L.value}/vendors/${category.value.slug[L.value]}/${v.slug}`
+        : undefined;
+
+    const sameAs = [v.website, v.instagram].filter(Boolean) as string[];
+    const areas = (v.serviceAreas?.[L.value] ?? []).filter(Boolean);
+
+    const localBusiness: Record<string, unknown> = {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name: v.name[L.value],
+        description: v.description[L.value],
+        ...(url ? { url } : {}),
+        ...(sameAs.length ? { sameAs } : {}),
+        ...(v.phone ? { telephone: v.phone } : {}),
+        ...(v.email ? { email: v.email } : {}),
+        ...(areas.length
+            ? {
+                  areaServed: areas.map((x) => ({
+                      "@type": "AdministrativeArea",
+                      name: x,
+                  })),
+              }
+            : {}),
+    };
+
+    if (v.address?.city || v.address?.country) {
+        localBusiness.address = {
+            "@type": "PostalAddress",
+            ...(v.address.street ? { streetAddress: v.address.street } : {}),
+            ...(v.address.city ? { addressLocality: v.address.city } : {}),
+            ...(v.address.region ? { addressRegion: v.address.region } : {}),
+            ...(v.address.country ? { addressCountry: v.address.country } : {}),
+            ...(v.address.postalCode
+                ? { postalCode: v.address.postalCode }
+                : {}),
+        };
+    }
+
+    const imgs = v.images ?? [];
+    const hero = imgs.find((i) => i.type === "hero") ?? imgs[0] ?? null;
+    if (hero?.src) {
+        localBusiness.image =
+            base && hero.src.startsWith("/") ? `${base}${hero.src}` : hero.src;
+    }
+
+    // ---------- BreadcrumbList ----------
+    const prefix = `/${L.value}`;
+    const crumbs = [
+        { name: L.value === "es" ? "Inicio" : "Home", path: `${prefix}/` },
+        {
+            name: L.value === "es" ? "Proveedores" : "Vendors",
+            path: `${prefix}/vendors`,
+        },
+        {
+            name: category.value.label[L.value],
+            path: `${prefix}/vendors/${category.value.slug[L.value]}`,
+        },
+        {
+            name: v.name[L.value],
+            path: `${prefix}/vendors/${category.value.slug[L.value]}/${v.slug}`,
+        },
+    ];
+
+    const breadcrumbList = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: crumbs.map((c, idx) => ({
+            "@type": "ListItem",
+            position: idx + 1,
+            name: c.name,
+            item: base ? `${base}${c.path}` : c.path,
+        })),
+    };
+
+    return {
+        script: [
+            {
+                type: "application/ld+json",
+                children: JSON.stringify(localBusiness),
+            },
+            {
+                type: "application/ld+json",
+                children: JSON.stringify(breadcrumbList),
+            },
+        ],
+    };
 });
 </script>
 
@@ -254,5 +388,38 @@ useSeoMeta({
 
 .vendor__muted {
     margin-top: var(--s-4);
+}
+.crumbs {
+    margin-top: var(--s-4);
+}
+.crumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.crumbs__link {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(20, 20, 20, 0.65);
+    text-decoration: none;
+}
+.crumbs__link:hover {
+    color: rgba(20, 20, 20, 0.9);
+}
+.crumbs__sep {
+    color: rgba(20, 20, 20, 0.25);
+    font-size: 12px;
+}
+.crumbs__item--current {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(20, 20, 20, 0.9);
 }
 </style>
