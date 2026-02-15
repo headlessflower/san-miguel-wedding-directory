@@ -89,43 +89,73 @@
 </template>
 
 <script setup lang="ts">
-type Locale = "en" | "es";
+import { buildBreadcrumbListJsonLd } from "~/utils/seo/breadcrumbs";
+import { buildEventVenueJsonLd } from "~/utils/seo/eventVenue";
+import type { Locale } from "~/types/i18n";
 
+const siteUrl = (useRuntimeConfig().public?.siteUrl as string) || "";
 const { t, locale } = useI18n();
-const L = computed(() => (locale.value as Locale) || "en");
-const localePath = useLocalePath();
-const switchLocalePath = useSwitchLocalePath();
 const route = useRoute();
+
+const localePath = useLocalePath(); // keep only if you actually use it in template
+const L = computed<Locale>(() => (locale.value as Locale) || "en");
+
 const { getVenueBySlug } = useListings();
-const seoTitle = computed(
-    () => `${venue.value.name[L.value]} • ${t("seo.siteTitle")}`,
-);
-const seoDescription = computed(() => venue.value.description[L.value]);
 
 const venue = computed(() => {
-    const slug = String(route.params.slug || "");
-    const found = getVenueBySlug(slug);
-    if (!found)
-        throw createError({
-            statusCode: 404,
-            statusMessage: "Venue not found",
-        });
-    return found;
-});
-const heroImage = computed(() => {
-    const v = venue.value; // if `venue` is computed/ref
-    const imgs = v?.images ?? [];
-    return imgs.find((i) => i.type === "hero") ?? imgs[0] ?? null;
+  const slug = String(route.params.slug || "");
+  const found = getVenueBySlug(slug);
+  if (!found) throw createError({ statusCode: 404, statusMessage: "Venue not found" });
+  return found;
 });
 
-// Simple SEO per venue (good enough for now; we’ll improve later)
+// ✅ TOP-LEVEL so template can access it
+const heroImage = computed(() => {
+  const imgs = venue.value.images ?? [];
+  return imgs.find((i) => i.type === "hero") ?? imgs[0] ?? null;
+});
+
+const seoTitle = computed(() => `${venue.value.name[L.value]} • ${t("seo.siteTitle")}`);
+const seoDescription = computed(() => venue.value.description[L.value]);
 
 useSeoMeta({
-    title: seoTitle,
-    description: seoDescription,
-    ogTitle: seoTitle,
-    ogDescription: seoDescription,
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
 });
+
+useHead(() => {
+  const l = L.value;
+  const baseUrl = siteUrl || undefined;
+
+  const venuePath = `/${l}/wedding-venues/${venue.value.slug}`;
+  const venuesIndexPath = `/${l}/wedding-venues`;
+
+  const breadcrumbJsonLd = buildBreadcrumbListJsonLd({
+    baseUrl,
+    items: [
+      { name: l === "es" ? "Inicio" : "Home", urlPath: `/${l}/` },
+      { name: l === "es" ? "Lugares para bodas" : "Wedding venues", urlPath: venuesIndexPath },
+      { name: venue.value.name[l], urlPath: venuePath },
+    ],
+  });
+
+  const eventVenueJsonLd = buildEventVenueJsonLd({
+    baseUrl,
+    locale: l,
+    venue: venue.value,
+    pagePath: venuePath,
+  });
+
+  return {
+    script: [
+      { type: "application/ld+json", children: JSON.stringify(breadcrumbJsonLd) },
+      { type: "application/ld+json", children: JSON.stringify(eventVenueJsonLd) },
+    ],
+  };
+});
+
 </script>
 
 <style scoped>

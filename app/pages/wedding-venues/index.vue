@@ -66,13 +66,80 @@
 </template>
 
 <script setup lang="ts">
-type Locale = "en" | "es";
-const { t, locale } = useI18n();
+import { buildBreadcrumbListJsonLd } from "~/utils/seo/breadcrumbs";
+import { buildItemListJsonLd, type ItemListEntry } from "~/utils/seo/itemList";
+import type { Locale } from "~/types/i18n";
 const localePath = useLocalePath();
-const switchLocalePath = useSwitchLocalePath();
+
+
+const siteUrl = (useRuntimeConfig().public?.siteUrl as string) || "";
+const { t, locale } = useI18n();
+const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const { getVenues } = useListings();
 const venues = computed(() => getVenues());
+
+// SEO meta (your existing pattern)
+const seoTitle = computed(() => `${t("nav.venues")} • ${t("seo.siteTitle")}`);
+const seoDescription = computed(() =>
+    L.value === "es"
+        ? "Explora lugares para bodas en San Miguel de Allende: haciendas, hoteles boutique, terrazas y jardines."
+        : "Explore wedding venues in San Miguel de Allende: haciendas, boutique hotels, rooftops, and gardens."
+);
+
+useSeoMeta({
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
+});
+
+useHead(() => {
+  const l = L.value;
+  const baseUrl = siteUrl || undefined;
+
+  const pagePath = `/${l}/wedding-venues`;
+
+  // Breadcrumbs
+  const breadcrumbJsonLd = buildBreadcrumbListJsonLd({
+    baseUrl,
+    items: [
+      { name: l === "es" ? "Inicio" : "Home", urlPath: `/${l}/` },
+      { name: l === "es" ? "Lugares para bodas" : "Wedding venues", urlPath: pagePath },
+    ],
+  });
+
+  // ItemList of venues
+  const items: ItemListEntry[] = venues.value.map((v) => {
+    const imgs = v.images ?? [];
+    const hero = imgs.find((i) => i.type === "hero") ?? imgs[0] ?? null;
+
+    return {
+      name: v.name[l],
+      urlPath: `/${l}/wedding-venues/${v.slug}`,
+      imageUrl: hero?.src,
+    };
+  });
+
+  const itemListJsonLd = buildItemListJsonLd({
+    locale: l,
+    baseUrl,
+    listName:
+        l === "es"
+            ? "Lugares para bodas en San Miguel de Allende"
+            : "Wedding venues in San Miguel de Allende",
+    pagePath,
+    items,
+    ordered: true,
+  });
+
+  return {
+    script: [
+      { type: "application/ld+json", children: JSON.stringify(breadcrumbJsonLd) },
+      { type: "application/ld+json", children: JSON.stringify(itemListJsonLd) },
+    ],
+  };
+});
 </script>
 
 <style scoped>

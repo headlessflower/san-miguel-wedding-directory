@@ -82,116 +82,127 @@
 
 <script setup lang="ts">
 import { getVendorCategoryBySlug } from "~/data/taxonomies";
+import { buildItemListJsonLd, type ItemListEntry } from "~/utils/seo/itemList";
+import { buildFaqPageJsonLd } from "~/utils/seo/faqPage";
+import { buildBreadcrumbListJsonLd } from "~/utils/seo/breadcrumbs";
+import type { Locale } from "~/types/i18n";
+const localePath = useLocalePath();
+
 
 const config = useRuntimeConfig();
 const siteUrl = (config.public?.siteUrl as string) || "";
 
-type Locale = "en" | "es";
-
 const { t, locale } = useI18n();
 const route = useRoute();
-const localePath = useLocalePath();
 
 const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const category = computed(() => {
-    const slug = String(route.params.category || "");
-    const found = getVendorCategoryBySlug(L.value, slug);
+  const slug = String(route.params.category || "");
+  const found = getVendorCategoryBySlug(L.value, slug);
 
-    if (!found) {
-        throw createError({
-            statusCode: 404,
-            statusMessage: "Category not found",
-        });
-    }
+  if (!found) {
+    throw createError({ statusCode: 404, statusMessage: "Category not found" });
+  }
 
-    return found;
+  return found;
 });
 
 const { getVendorsByCategoryKey } = useListings();
 
 const vendors = computed(() => {
-    const key = category.value.key;
-    const list = getVendorsByCategoryKey(category.value.key);
-    return [...list].sort(
-        (a, b) => Number(!!b.featured) - Number(!!a.featured),
-    );
+  const key = category.value.key;
+  const list = getVendorsByCategoryKey(key);
+  return [...list].sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
 });
 
-const heroImage = computed(() => null);
-
-const seoTitle = computed(() => {
-    return `${category.value.label[L.value]} • ${t("seo.siteTitle")}`;
-});
+const seoTitle = computed(() => `${category.value.label[L.value]} • ${t("seo.siteTitle")}`);
 
 const seoDescription = computed(() => {
-    return L.value === "es"
-        ? `Encuentra ${category.value.label[L.value].toLowerCase()} para bodas en San Miguel de Allende.`
-        : `Find ${category.value.label[L.value].toLowerCase()} for weddings in San Miguel de Allende.`;
+  const label = category.value.label[L.value].toLowerCase();
+  return L.value === "es"
+      ? `Encuentra ${label} para bodas en San Miguel de Allende.`
+      : `Find ${label} for weddings in San Miguel de Allende.`;
 });
 
 useSeoMeta({
-    title: seoTitle,
-    description: seoDescription,
-    ogTitle: seoTitle,
-    ogDescription: seoDescription,
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
 });
 
 useHead(() => {
-    const isEs = L.value === "es";
-    const prefix = isEs ? "/es" : "/en";
-    const catUrl = siteUrl
-        ? `${siteUrl}${prefix}/vendors/${category.value.slug[L.value]}`
-        : undefined;
+  const l = L.value;
+  const baseUrl = siteUrl || undefined;
 
-    const jsonLd: Record<string, unknown> = {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        name: category.value.label[L.value],
-        ...(catUrl ? { url: catUrl } : {}),
-        itemListElement: vendors.value.map((v, idx) => {
-            const loc = `${prefix}/vendors/${category.value.slug[L.value]}/${v.slug}`;
-            return {
-                "@type": "ListItem",
-                position: idx + 1,
-                name: v.name[L.value],
-                ...(siteUrl ? { url: `${siteUrl}${loc}` } : { url: loc }),
-            };
-        }),
-    };
+  const pagePath = `/${l}/vendors/${category.value.slug[l]}`;
 
-    return {
-        script: [
-            { type: "application/ld+json", children: JSON.stringify(jsonLd) },
-        ],
-    };
-});
+  // ---------- BreadcrumbList ----------
+  const crumbs = [
+    { name: l === "es" ? "Inicio" : "Home", urlPath: `/${l}/` },
+    { name: l === "es" ? "Proveedores" : "Vendors", urlPath: `/${l}/vendors` },
+    { name: category.value.label[l], urlPath: pagePath },
+  ];
 
-const faqItems = computed(() => category.value.faq?.[L.value] ?? []);
+  const breadcrumbJsonLd = buildBreadcrumbListJsonLd({
+    baseUrl,
+    items: crumbs,
+  });
 
-useHead(() => {
-    if (!faqItems.value.length) return {};
+  // ---------- ItemList ----------
+  const listName =
+      l === "es"
+          ? `${category.value.label[l]} en San Miguel de Allende`
+          : `${category.value.label[l]} in San Miguel de Allende`;
 
-    const faqJsonLd = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: faqItems.value.map((it) => ({
-            "@type": "Question",
-            name: it.q,
-            acceptedAnswer: { "@type": "Answer", text: it.a },
-        })),
-    };
+  const items: ItemListEntry[] = vendors.value.map((v) => {
+    const imgs = v.images ?? [];
+    const hero = imgs.find((i) => i.type === "hero") ?? imgs[0] ?? null;
 
     return {
-        script: [
-            {
-                type: "application/ld+json",
-                children: JSON.stringify(faqJsonLd),
-            },
-        ],
+      name: v.name[l],
+      urlPath: `/${l}/vendors/${category.value.slug[l]}/${v.slug}`,
+      imageUrl: hero?.src,
     };
+  });
+
+  const itemListJsonLd = buildItemListJsonLd({
+    locale: l,
+    baseUrl,
+    listName,
+    pagePath,
+    items,
+    ordered: true,
+  });
+
+  // ---------- FAQPage (optional) ----------
+  const faq = category.value.faq?.[l] ?? [];
+  const faqJsonLd =
+      faq.length > 0
+          ? buildFaqPageJsonLd({
+            baseUrl,
+            pagePath,
+            title:
+                l === "es"
+                    ? `Preguntas frecuentes: ${category.value.label[l]}`
+                    : `FAQ: ${category.value.label[l]}`,
+            items: faq,
+          })
+          : null;
+
+  return {
+    script: [
+      { type: "application/ld+json", children: JSON.stringify(breadcrumbJsonLd) },
+      { type: "application/ld+json", children: JSON.stringify(itemListJsonLd) },
+      ...(faqJsonLd
+          ? [{ type: "application/ld+json", children: JSON.stringify(faqJsonLd) }]
+          : []),
+    ],
+  };
 });
 </script>
+
 
 <style scoped>
 .vendorCat__hero {

@@ -106,11 +106,11 @@
 
 <script setup lang="ts">
 import { getVendorCategoryBySlug } from "~/data/taxonomies";
+const localePath = useLocalePath();
 
-type Locale = "en" | "es";
+import type { Locale } from "~/types/i18n";
 
 const { t, locale } = useI18n();
-const localePath = useLocalePath();
 const route = useRoute();
 
 const siteUrl = (useRuntimeConfig().public?.siteUrl as string) || "";

@@ -47,10 +47,12 @@
 
 <script setup lang="ts">
 import { VENDOR_CATEGORIES } from "../../data/taxonomies";
+import type { Locale } from "~/types/i18n";
 
-type Locale = "en" | "es";
-const { t, locale } = useI18n();
 const localePath = useLocalePath();
+
+
+const { t, locale } = useI18n();
 const switchLocalePath = useSwitchLocalePath();
 
 const categories = computed(() => VENDOR_CATEGORIES);

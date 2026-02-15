@@ -1648,6 +1648,302 @@ export const SEED_VENDORS: VendorListing[] = [
       },
     ],
   },
+  {
+    id: "vendor_transport_1",
+    type: "vendor",
+    categoryKey: "transport",
+    slug: "bajio-go",
+    featured: true,
+    name: { en: "BajioGo", es: "BajioGo" },
+    description: {
+      en: "Private airport transfers and wedding guest shuttle services between León (BJX), Querétaro (QRO), and San Miguel de Allende.",
+      es: "Traslados privados desde aeropuertos y servicio de transporte para invitados entre León (BJX), Querétaro (QRO) y San Miguel de Allende.",
+    },
+    website: "https://bajiogo.com",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende", "León", "Querétaro"],
+      es: ["San Miguel de Allende", "León", "Querétaro"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/bajio-go-hero.jpg",
+        alt: {
+          en: "Private wedding guest shuttle in San Miguel de Allende",
+          es: "Transporte privado para invitados de boda en San Miguel de Allende",
+        },
+        credit: "Replace with licensed or press image",
+        licenseNote: "Use authorized vendor media.",
+      },
+    ],
+  },
+
+  {
+    id: "vendor_transport_2",
+    type: "vendor",
+    categoryKey: "transport",
+    slug: "san-miguel-luxury-drivers",
+    featured: true,
+    name: { en: "San Miguel Luxury Drivers", es: "San Miguel Luxury Drivers" },
+    description: {
+      en: "Luxury private drivers and executive vehicles for wedding weekends and VIP transportation.",
+      es: "Choferes privados y vehículos ejecutivos para fines de semana de boda y transporte VIP.",
+    },
+    website: "",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende"],
+      es: ["San Miguel de Allende"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/sma-luxury-drivers-hero.jpg",
+        alt: {
+          en: "Luxury black SUV wedding transport in San Miguel",
+          es: "SUV de lujo para transporte de boda en San Miguel",
+        },
+        credit: "Replace with licensed or press image",
+        licenseNote: "Use authorized vendor media.",
+      },
+    ],
+  },
+
+  {
+    id: "vendor_transport_3",
+    type: "vendor",
+    categoryKey: "transport",
+    slug: "vintage-car-sma",
+    featured: false,
+    name: { en: "Vintage Car SMA", es: "Auto Vintage SMA" },
+    description: {
+      en: "Classic and vintage car rentals for wedding ceremonies and photography sessions.",
+      es: "Renta de autos clásicos y vintage para ceremonias y sesiones fotográficas de boda.",
+    },
+    website: "",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende"],
+      es: ["San Miguel de Allende"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/vintage-car-sma-hero.jpg",
+        alt: {
+          en: "Classic vintage wedding car in colonial San Miguel",
+          es: "Auto clásico para boda en el centro colonial de San Miguel",
+        },
+        credit: "Replace with licensed or press image",
+        licenseNote: "Use authorized vendor media.",
+      },
+    ],
+  },
+
+  {
+    id: "vendor_transport_4",
+    type: "vendor",
+    categoryKey: "transport",
+    slug: "queretaro-airport-shuttle",
+    featured: false,
+    name: { en: "Querétaro Airport Shuttle", es: "Shuttle Aeropuerto Querétaro" },
+    description: {
+      en: "Group shuttle transportation for wedding guests arriving via Querétaro International Airport.",
+      es: "Servicio de transporte grupal para invitados que llegan al Aeropuerto Internacional de Querétaro.",
+    },
+    website: "",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Querétaro"],
+      es: ["San Miguel de Allende", "Querétaro"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/queretaro-shuttle-hero.jpg",
+        alt: {
+          en: "Wedding guest airport shuttle service",
+          es: "Servicio de transporte para invitados desde aeropuerto",
+        },
+        credit: "Replace with licensed or press image",
+        licenseNote: "Use authorized vendor media.",
+      },
+    ],
+  },
+  {
+    id: "vendor_stationery_1",
+    type: "vendor",
+    categoryKey: "stationery",
+    slug: "amatl-handmade-paper-studio",
+    featured: true,
+    name: { en: "Amatl Handmade Paper Studio", es: "Amatl Estudio de Papel Hecho a Mano" },
+    description: {
+      en: "Handmade paper studio for wedding stationery: invitations, menus, place cards, and custom paper with natural inclusions.",
+      es: "Estudio de papel artesanal para papelería de boda: invitaciones, menús, tarjetas de lugar y papel personalizado con inclusiones naturales.",
+    },
+    website: "https://www.amatlstudio.shop",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Los Angeles"],
+      es: ["San Miguel de Allende", "Los Ángeles"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/amatl-stationery-hero.jpg",
+        alt: {
+          en: "Handmade paper wedding stationery suite with invitations and menus",
+          es: "Set de papelería de boda en papel artesanal con invitaciones y menús",
+        },
+        credit: "Your photo / placeholder",
+        licenseNote: "Replace with your own images.",
+      },
+    ],
+  },
+
+  {
+    id: "vendor_stationery_2",
+    type: "vendor",
+    categoryKey: "stationery",
+    slug: "letterpress-studio-sma",
+    featured: true,
+    name: { en: "Letterpress Studio SMA", es: "Estudio Letterpress SMA" },
+    description: {
+      en: "Letterpress-style wedding invitations and day-of paper goods with custom typography and premium finishes.",
+      es: "Invitaciones en estilo letterpress y papelería del día con tipografía personalizada y acabados premium.",
+    },
+    website: "",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Guanajuato"],
+      es: ["San Miguel de Allende", "Guanajuato"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/letterpress-studio-sma-hero.jpg",
+        alt: {
+          en: "Letterpress wedding invitation suite on textured paper",
+          es: "Set de invitaciones letterpress sobre papel texturizado",
+        },
+        credit: "Your photo / placeholder",
+        licenseNote: "Replace with vendor press kit or your own photos.",
+      },
+    ],
+  },
+
+  {
+    id: "vendor_stationery_3",
+    type: "vendor",
+    categoryKey: "stationery",
+    slug: "day-of-signage-co",
+    featured: false,
+    name: { en: "Day-Of Signage Co.", es: "Señalética para Bodas" },
+    description: {
+      en: "Wedding day signage: seating charts, welcome signs, bar menus, and table numbers—designed to match your venue aesthetic.",
+      es: "Señalética para bodas: seating charts, letreros de bienvenida, menús de bar y números de mesa—diseño alineado con la estética del lugar.",
+    },
+    website: "",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende"],
+      es: ["San Miguel de Allende"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/day-of-signage-hero.jpg",
+        alt: {
+          en: "Wedding seating chart and welcome sign display in a courtyard",
+          es: "Seating chart y letrero de bienvenida en un patio",
+        },
+        credit: "Your photo / placeholder",
+        licenseNote: "Replace with licensed or approved imagery.",
+      },
+    ],
+  },
+
+  {
+    id: "vendor_stationery_4",
+    type: "vendor",
+    categoryKey: "stationery",
+    slug: "calligraphy-placecards-studio",
+    featured: false,
+    name: { en: "Calligraphy & Place Cards Studio", es: "Estudio de Caligrafía y Place Cards" },
+    description: {
+      en: "Modern calligraphy for escort cards, place cards, envelopes, and custom signage for destination weddings.",
+      es: "Caligrafía moderna para escort cards, place cards, sobres y señalética personalizada para bodas de destino.",
+    },
+    website: "",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Querétaro"],
+      es: ["San Miguel de Allende", "Querétaro"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/calligraphy-placecards-hero.jpg",
+        alt: {
+          en: "Hand-lettered wedding place cards and envelope calligraphy",
+          es: "Place cards con lettering y caligrafía en sobres",
+        },
+        credit: "Your photo / placeholder",
+        licenseNote: "Replace with press kit or your own photos.",
+      },
+    ],
+  },
+
+  {
+    id: "vendor_stationery_5",
+    type: "vendor",
+    categoryKey: "stationery",
+    slug: "wedding-invitations-design-studio",
+    featured: false,
+    name: { en: "Wedding Invitations Design Studio", es: "Estudio de Diseño de Invitaciones" },
+    description: {
+      en: "Custom wedding invitations and print design: bilingual suites, maps, weekend itineraries, and RSVP cards.",
+      es: "Invitaciones personalizadas y diseño impreso: suites bilingües, mapas, itinerarios de fin de semana y tarjetas RSVP.",
+    },
+    website: "",
+    instagram: "",
+    phone: "",
+    email: "",
+    serviceAreas: {
+      en: ["San Miguel de Allende", "Mexico"],
+      es: ["San Miguel de Allende", "México"],
+    },
+    images: [
+      {
+        type: "hero",
+        src: "/images/vendors/wedding-invitations-design-studio-hero.jpg",
+        alt: {
+          en: "Bilingual wedding invitation suite with map and itinerary card",
+          es: "Suite de invitaciones bilingüe con mapa y tarjeta de itinerario",
+        },
+        credit: "Your photo / placeholder",
+        licenseNote: "Replace with licensed or approved imagery.",
+      },
+    ],
+  },
+
 ];
 
 export const SEED_LISTINGS: Listing[] = [...SEED_VENUES, ...SEED_VENDORS];
