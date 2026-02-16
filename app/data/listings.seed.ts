@@ -1,47 +1,69 @@
-// app/data/listings.seed.ts (type upgrades)
-
-export type VenueType =
-  | "hacienda"
-  | "hotel_boutique"
-  | "hotel_luxury"
-  | "rooftop"
-  | "garden"
-  | "estate"
-  | "historic_home"
-  | "industrial"
-  | "restaurant"
-  | "other";
+// app/data/listings.seed.ts (cleaned types)
 
 export type Locale = "en" | "es";
+export type Localized<T> = Record<Locale, T>;
+
+export type VenueType =
+    | "hacienda"
+    | "hotel_boutique"
+    | "hotel_luxury"
+    | "rooftop"
+    | "garden"
+    | "estate"
+    | "historic_home"
+    | "industrial"
+    | "restaurant"
+    | "other";
 
 export type LuxuryTier = "budget" | "mid" | "upper" | "luxury";
-
 export type CeremonyType = "civil" | "religious" | "symbolic";
-
 export type PriceRange = "$" | "$$" | "$$$" | "$$$$";
 
-export interface ListingBase {
-  id: string;
-  slug: string;
-  featured: boolean;
+export type FeaturedTier = "standard" | "featured" | "sponsored";
 
-  name: Record<Locale, string>;
-  description: Record<Locale, string>;
+export type ListingImageType = "hero" | "ceremony" | "reception" | "exterior" | "detail";
 
+export interface ListingImage {
+  src: string; // local path or external
+  alt: Localized<string>;
+  type?: ListingImageType;
+  credit?: string;     // "Courtesy of..."
+  sourceUrl?: string;  // press kit URL
+  licenseNote?: string;// internal note
+}
+
+export interface ContactFields {
   website?: string;
   instagram?: string;
   phone?: string;
   email?: string;
-
-  images?: Array<{
-    src: string;
-    alt: Record<Locale, string>;
-    type?: "hero" | "ceremony" | "reception" | "exterior" | "detail";
-    credit?: string;
-    sourceUrl?: string;
-    licenseNote?: string;
-  }>;
 }
+
+export interface MonetizationFields {
+  /**
+   * Back-compat hook: if you still use `featured: true` in older seeds,
+   * treat it as "featured" in sorting.
+   */
+  featured: boolean;
+
+  isVerified?: boolean;
+  isClaimed?: boolean;
+
+  featuredTier?: FeaturedTier; // default to "standard" if missing
+  featuredUntil?: string;      // ISO date, optional
+}
+
+export interface ListingBase extends ContactFields, MonetizationFields {
+  id: string;
+  slug: string;
+
+  name: Localized<string>;
+  description: Localized<string>;
+
+  images?: ListingImage[];
+}
+
+/** Venue-specific */
 
 export interface VenueRules {
   // if unknown, leave undefined (don’t guess)
@@ -76,34 +98,19 @@ export interface VenueListing extends ListingBase {
   luxuryTier?: LuxuryTier;
   priceRange?: PriceRange;
 
-  ceremonyTypes?: CeremonyType[]; // what they can host
+  ceremonyTypes?: CeremonyType[];
+
   rules?: VenueRules;
   logistics?: VenueLogistics;
   location?: LocationHints;
 
   // SEO extras (optional)
-  highlights?: {
-    en: string[];
-    es: string[];
-  };
-
-  images?: Array<{
-    src: string; // local path or external
-    alt: { en: string; es: string };
-    type?: "hero" | "ceremony" | "reception" | "exterior" | "detail";
-    credit?: string; // "Courtesy of Rosewood..."
-    sourceUrl?: string; // press kit URL
-    licenseNote?: string; // optional internal note
-  }>;
-
-  // For future “verified” badge / monetization
-  isVerified?: boolean;
-  isClaimed?: boolean;
+  highlights?: Localized<string[]>;
 }
 
-export interface VendorListing extends ListingBase {
-  type: "vendor";
-  categoryKey:
+/** Vendor-specific */
+
+export type VendorCategoryKey =
     | "planner"
     | "caterer"
     | "florist"
@@ -116,10 +123,11 @@ export interface VendorListing extends ListingBase {
     | "transport"
     | "stationery";
 
-  serviceAreas?: {
-    en: string[];
-    es: string[];
-  };
+export interface VendorListing extends ListingBase {
+  type: "vendor";
+  categoryKey: VendorCategoryKey;
+
+  serviceAreas?: Localized<string[]>;
 
   address?: {
     street?: string;
@@ -128,12 +136,10 @@ export interface VendorListing extends ListingBase {
     country?: string;
     postalCode?: string;
   };
-  // Monetization hooks
-  isVerified?: boolean;
-  isClaimed?: boolean;
 }
 
 export type Listing = VenueListing | VendorListing;
+
 
 /**
  * Seed: Venues

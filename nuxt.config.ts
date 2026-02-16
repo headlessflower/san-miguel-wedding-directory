@@ -14,7 +14,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  css: ["~/assets/css/main.css"],
+  css: ["~/assets/css/tokens.css", "~/assets/css/main.css", "~/assets/css/base.css", "~/assets/css/utilities.css", ],
 
   modules: ["@nuxtjs/i18n", "@nuxtjs/seo", "@nuxtjs/sitemap", "@nuxt/content"],
 

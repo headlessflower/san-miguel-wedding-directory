@@ -31,16 +31,22 @@
                         class="appHeader__langLink"
                         >ES</NuxtLink
                     >
+
+
                 </div>
+              <NuxtLink :to="localePath(`/search`)" class="appHeader__navLink">
+                {{ isEs  ? "Buscar" : "Search" }}
+              </NuxtLink>
             </nav>
         </div>
     </header>
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const switchLocalePath = useSwitchLocalePath();
+const isEs = computed(() => locale.value === "es");
 </script>
 
 <style scoped>
