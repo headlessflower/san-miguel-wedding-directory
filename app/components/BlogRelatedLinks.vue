@@ -1,83 +1,80 @@
 <template>
-    <aside v-if="hasAny" class="related card">
-        <div class="related__inner">
-            <h2 class="related__title">
-                {{ locale === "es" ? "En el directorio" : "In the directory" }}
-            </h2>
+  <aside v-if="hasAny" class="related card">
+    <div class="related__inner">
+      <h2 class="related__title">
+        {{ locale === "es" ? "En el directorio" : "In the directory" }}
+      </h2>
 
-            <div v-if="venueLinks.length" class="related__group">
-                <p class="related__label">
-                    {{ locale === "es" ? "Lugares" : "Venues" }}
-                </p>
-                <ul class="related__list">
-                    <li
-                        v-for="v in venueLinks"
-                        :key="v.slug"
-                        class="related__item"
-                    >
-                        <NuxtLink
-                            :to="localePath(`/wedding-venues/${v.slug}`)"
-                            class="related__link"
-                        >
-                            {{ v.name[locale] }}
-                        </NuxtLink>
-                    </li>
-                </ul>
-            </div>
+      <div v-if="venueLinks.length" class="related__group">
+        <p class="related__label">
+          {{ locale === "es" ? "Lugares" : "Venues" }}
+        </p>
 
-            <div v-if="categoryLinks.length" class="related__group">
-                <p class="related__label">
-                    {{ locale === "es" ? "Proveedores" : "Vendors" }}
-                </p>
-                <ul class="related__list">
-                    <li
-                        v-for="c in categoryLinks"
-                        :key="c.slug[locale]"
-                        class="related__item"
-                    >
-                        <NuxtLink
-                            :to="localePath(`/vendors/${c.slug[locale]}`)"
-                            class="related__link"
-                        >
-                            {{ c.label[locale] }}
-                        </NuxtLink>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </aside>
+        <ul class="related__list">
+          <li v-for="v in venueLinks" :key="v.slug" class="related__item">
+            <NuxtLink
+                :to="localePath({ name: 'wedding-venues-slug', params: { slug: v.slug } })"
+                class="related__link"
+            >
+              {{ v.name[locale] }}
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="categoryLinks.length" class="related__group">
+        <p class="related__label">
+          {{ locale === "es" ? "Proveedores" : "Vendors" }}
+        </p>
+
+        <ul class="related__list">
+          <li
+              v-for="c in categoryLinks"
+              :key="c.key"
+              class="related__item"
+          >
+            <NuxtLink
+                :to="localePath({ name: 'vendors-category', params: { category: c.slug[l] } })"
+                class="related__link"
+            >
+              {{ c.label[locale] }}
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
 </template>
 
 <script setup lang="ts">
+import { SEED_VENUES } from "~/data/listings.seed";
+import { VENDOR_CATEGORIES } from "~/data/taxonomies";
+
 type Locale = "en" | "es";
 
 const props = defineProps<{
-    relatedVenues?: string[];
-    relatedVendorCategories?: string[];
+  relatedVenues?: string[];
+  relatedVendorCategories?: string[];
 }>();
 
 const { locale } = useI18n();
 const localePath = useLocalePath();
 
-import { SEED_VENUES } from "~/data/listings.seed";
-import { VENDOR_CATEGORIES } from "~/data/taxonomies";
-
-const l = computed(() => (locale.value as Locale) || "en");
+const l = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const venueLinks = computed(() => {
-    const slugs = props.relatedVenues ?? [];
-    return SEED_VENUES.filter((v) => slugs.includes(v.slug));
+  const slugs = props.relatedVenues ?? [];
+  return SEED_VENUES.filter((v) => slugs.includes(v.slug));
 });
 
 const categoryLinks = computed(() => {
-    const keys = props.relatedVendorCategories ?? [];
-    return VENDOR_CATEGORIES.filter((c) => keys.includes(c.key));
+  const keys = props.relatedVendorCategories ?? [];
+  return VENDOR_CATEGORIES.filter((c) => keys.includes(c.key));
 });
 
-const hasAny = computed(
-    () => venueLinks.value.length || categoryLinks.value.length,
-);
+const hasAny = computed(() => venueLinks.value.length || categoryLinks.value.length);
 </script>
+
 
 <style scoped>
 .related {

@@ -9,6 +9,9 @@ import { VENDOR_CATEGORIES } from "./app/data/taxonomies";
 function stripExt(name: string) {
   return name.replace(/\.(md|mdx)$/i, "");
 }
+
+const gtagId = process.env.NUXT_PUBLIC_GTAG_ID;
+
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
 
@@ -16,7 +19,12 @@ export default defineNuxtConfig({
 
   css: ["~/assets/css/tokens.css", "~/assets/css/main.css", "~/assets/css/base.css", "~/assets/css/utilities.css", ],
 
-  modules: ["@nuxtjs/i18n", "@nuxtjs/seo", "@nuxtjs/sitemap", "@nuxt/content"],
+  modules: ["@nuxtjs/i18n", "@nuxtjs/seo", "@nuxtjs/sitemap", "@nuxt/content", "nuxt-gtag"],
+
+  gtag: {
+    id: gtagId || "G-XXXXXXXXXX",
+    enabled: Boolean(gtagId),
+  },
 
   // Swap once your domain is final
   site: {
@@ -29,8 +37,10 @@ export default defineNuxtConfig({
 
   i18n: {
     strategy: "prefix",
+    customRoutes: "config",
     defaultLocale: "en",
     langDir: "locales",
+
 
     locales: [
       { code: "en", iso: "en-US", file: "en.json", name: "English" },
@@ -84,6 +94,18 @@ export default defineNuxtConfig({
         en: "/advertise",
         es: "/publicidad",
       },
+      "advertise-with-us": {
+        en: "/advertise-with-us",
+        es: "/anunciate-con-nosotros",
+      },
+      faq: {
+        en: "/faq",
+        es: "/preguntas-frecuentes",
+      },
+      newsletter: {
+        en: "/newsletter",
+        es: "/newsletter",
+      },
       about: {
         en: "/about",
         es: "/acerca",
@@ -101,22 +123,31 @@ export default defineNuxtConfig({
       const out: { loc: string }[] = [];
 
       // Static localized routes
-      const staticPaths = ["/", "/wedding-venues", "/vendors", "/blog"];
+      const staticPaths = [
+        { en: "/", es: "/" },
+        { en: "/wedding-venues", es: "/lugares-para-bodas" },
+        { en: "/vendors", es: "/proveedores" },
+        { en: "/blog", es: "/blog" },
+        { en: "/advertise", es: "/publicidad" },
+        { en: "/advertise-with-us", es: "/anunciate-con-nosotros" },
+        { en: "/faq", es: "/preguntas-frecuentes" },
+        { en: "/newsletter", es: "/newsletter" },
+      ];
       for (const p of staticPaths) {
-        out.push({ loc: `/en${p === "/" ? "" : p}` });
-        out.push({ loc: `/es${p === "/" ? "" : p}` });
+        out.push({ loc: `/en${p.en === "/" ? "" : p.en}` });
+        out.push({ loc: `/es${p.es === "/" ? "" : p.es}` });
       }
 
       // Venue detail pages
       for (const v of SEED_VENUES) {
         out.push({ loc: `/en/wedding-venues/${v.slug}` });
-        out.push({ loc: `/es/wedding-venues/${v.slug}` });
+        out.push({ loc: `/es/lugares-para-bodas/${v.slug}` });
       }
 
       // Vendor category pages
       for (const c of VENDOR_CATEGORIES) {
         out.push({ loc: `/en/vendors/${c.slug.en}` });
-        out.push({ loc: `/es/vendors/${c.slug.es}` });
+        out.push({ loc: `/es/proveedores/${c.slug.es}` });
       }
 
       // Blog posts: read filenames from /content/blog/en + /content/blog/es
@@ -154,6 +185,28 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    },
+  },
+  nitro: {
+    prerender: {
+      crawlLinks: true, // or false if you fully list routes
+      failOnError: false,
+      routes: [
+        '/en',
+        '/es',
+        '/en/wedding-venues',
+        '/es/lugares-para-bodas',
+        '/en/vendors',
+        '/es/proveedores',
+        ...SEED_VENUES.flatMap(v => [
+          `/en/wedding-venues/${v.slug}`,
+          `/es/lugares-para-bodas/${v.slug}`,
+        ]),
+        ...VENDOR_CATEGORIES.flatMap(c => [
+          `/en/vendors/${c.slug.en}`,
+          `/es/proveedores/${c.slug.es}`,
+        ]),
+      ],
     },
   },
 });

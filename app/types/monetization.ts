@@ -1,4 +1,6 @@
 export type FeaturedTier = "standard" | "featured" | "sponsored";
+export type BillingCadence = "monthly" | "boost_90d";
+
 
 export type AdPlacement =
     | "home_hero"
@@ -32,3 +34,12 @@ export interface AdCampaign {
     weight?: number; // higher = more likely to show
     creative: AdCreative;
 }
+
+export interface Promotion {
+    tier: FeaturedTier;         // featured or sponsored
+    cadence: BillingCadence;    // monthly or boost_90d
+    startsAt: string;           // ISO date
+    endsAt: string;             // ISO date
+    note?: string;              // internal note ("paid via invoice", etc.)
+}
+

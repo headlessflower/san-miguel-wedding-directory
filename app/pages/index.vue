@@ -1,190 +1,77 @@
 <template>
-    <main class="home">
-        <section class="home__hero">
-            <div class="container home__heroInner">
-                <div class="home__heroCopy">
-                    <h1 class="home__heroTitle">{{ t("home.heroTitle") }}</h1>
-                    <p class="home__heroSubtitle">
-                        {{ t("home.heroSubtitle") }}
-                    </p>
+  <main class="home">
+    <HomeHero />
 
-                    <div class="home__heroCtas">
-                        <NuxtLink
-                            :to="localePath('/wedding-venues')"
-                            class="btn btn--primary"
-                        >
-                            {{ t("home.primaryCta") }}
-                        </NuxtLink>
-                        <NuxtLink :to="localePath('/vendors')" class="btn">
-                            {{ t("home.secondaryCta") }}
-                        </NuxtLink>
-                    </div>
-                </div>
+    <FeaturedVenues :limit="3" />
+    <FeaturedVendors :limit="3" />
 
-                <div class="home__heroCard card">
-                    <div class="home__heroCardTop">
-                        <span class="badge badge--featured">{{
-                            t("directory.featured")
-                        }}</span>
-                    </div>
-                    <div class="home__heroCardBody">
-                        <p class="home__heroCardKicker">
-                            {{
-                                locale === "es"
-                                    ? "Ejemplo de listado"
-                                    : "Example listing"
-                            }}
-                        </p>
-                        <p class="home__heroCardTitle">
-                            {{
-                                locale === "es"
-                                    ? "Hacienda (Demo)"
-                                    : "Hacienda (Demo)"
-                            }}
-                        </p>
-                        <p class="home__heroCardText">
-                            {{
-                                locale === "es"
-                                    ? "Aquí irá una descripción breve del lugar."
-                                    : "A short venue description will live here."
-                            }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <section class="home__section">
+      <div class="container">
+        <div class="home__sectionHead">
+          <h2 class="home__sectionTitle">{{ t("home.browseByCategory") }}</h2>
 
-        <section class="home__section">
-            <div class="container">
-                <div class="home__sectionHead">
-                    <h2 class="home__sectionTitle">
-                        {{ t("home.featuredVenues") }}
-                    </h2>
-                    <NuxtLink
-                        :to="localePath('/wedding-venues')"
-                        class="home__sectionLink"
-                    >
-                        {{ locale === "es" ? "Ver todos" : "View all" }}
-                    </NuxtLink>
-                </div>
-                <div class="home__grid">
-                    <NuxtLink
-                        v-for="v in featuredVenues"
-                        :key="v.slug"
-                        :to="localePath(`/wedding-venues/${v.slug}`)"
-                        class="home__card card"
-                    >
-                        <div class="home__cardMedia" aria-hidden="true"></div>
+          <!-- ✅ named route (no /vendors leaks) -->
+          <NuxtLink :to="vendorsIndexTo" class="home__sectionLink">
+            {{ L === "es" ? "Explorar" : "Browse" }}
+          </NuxtLink>
+        </div>
 
-                        <div class="home__cardBody">
-                            <div class="home__cardTop">
-                                <span class="badge badge--featured">
-                                    {{ t("directory.featured") }}
-                                </span>
-
-                                <span v-if="v.luxuryTier" class="home__tier">
-                                    {{ v.luxuryTier.toUpperCase() }}
-                                </span>
-                            </div>
-
-                            <h3 class="home__cardTitle">
-                                {{ v.name[locale] }}
-                            </h3>
-
-                            <p class="home__cardText">
-                                {{ v.description[locale] }}
-                            </p>
-
-                            <div class="home__cardMeta">
-                                <span
-                                    v-if="v.capacitySeated"
-                                    class="home__metaItem"
-                                >
-                                    {{
-                                        locale === "es"
-                                            ? "Capacidad"
-                                            : "Capacity"
-                                    }}:
-                                    {{ v.capacitySeated }}
-                                </span>
-
-                                <span v-if="v.venueType" class="home__metaItem">
-                                    {{ v.venueType.replace("_", " ") }}
-                                </span>
-                            </div>
-
-                            <span class="home__cardCta">
-                                {{ t("directory.viewDetails") }} →
-                            </span>
-                        </div>
-                    </NuxtLink>
-                </div>
-            </div>
-        </section>
-
-        <section class="home__section">
-            <div class="container">
-                <div class="home__sectionHead">
-                    <h2 class="home__sectionTitle">
-                        {{ t("home.browseByCategory") }}
-                    </h2>
-                    <NuxtLink
-                        :to="localePath('/vendors')"
-                        class="home__sectionLink"
-                    >
-                        {{ locale === "es" ? "Explorar" : "Browse" }}
-                    </NuxtLink>
-                </div>
-
-                <div class="home__cats">
-                    <NuxtLink
-                        v-for="c in vendorCategoryCards"
-                        :key="c.slug[locale]"
-                        :to="localePath(`/vendors/${c.slug[locale]}`)"
-                        class="home__cat card"
-                    >
-                        <h3 class="home__catTitle">{{ c.label[locale] }}</h3>
-                        <p class="home__catText">
-                            {{
-                                locale === "es"
-                                    ? "Ver proveedores"
-                                    : "Browse vendors"
-                            }}
-                        </p>
-                    </NuxtLink>
-                </div>
-            </div>
-        </section>
-    </main>
+        <div class="home__cats">
+          <NuxtLink
+              v-for="c in vendorCategoryCards"
+              :key="c.key"
+              :to="vendorCategoryTo(c)"
+              class="home__cat card"
+          >
+            <h3 class="home__catTitle">{{ c.label[L] }}</h3>
+            <p class="home__catText">
+              {{ L === "es" ? "Ver proveedores" : "Browse vendors" }}
+            </p>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { VENDOR_CATEGORIES } from "~/data/taxonomies";
-
-type Locale = "en" | "es";
+import HomeHero from "~/components/home/HomeHero.vue";
+import FeaturedVenues from "~/components/home/FeaturedVenues.vue";
+import FeaturedVendors from "~/components/home/FeaturedVendors.vue";
+import type { Locale } from "~/types/i18n";
 
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
-const switchLocalePath = useSwitchLocalePath();
 
-const { getVenues } = useListings();
-
-const featuredVenues = computed(() => {
-    return getVenues()
-        .filter((v) => v.featured)
-        .sort((a, b) => {
-            // luxury tier priority
-            const order = { luxury: 4, upper: 3, mid: 2, budget: 1 };
-            return (
-                (order[b.luxuryTier ?? "mid"] || 0) -
-                (order[a.luxuryTier ?? "mid"] || 0)
-            );
-        })
-        .slice(0, 3);
-});
+const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const vendorCategoryCards = computed(() => VENDOR_CATEGORIES.slice(0, 6));
+
+/** ✅ Safe, localized links (named routes) */
+const vendorsIndexTo = computed(() => {
+  const l = L.value;
+  try {
+    return localePath({ name: "vendors" }, l);
+  } catch {
+    return `/${l}/${l === "es" ? "proveedores" : "vendors"}`;
+  }
+});
+
+function vendorCategoryTo(c: any) {
+  const l = L.value;
+  const catSlug = c.slug?.[l] ?? c.slug?.en ?? "";
+  try {
+    return localePath(
+        { name: "vendors-category", params: { category: catSlug } },
+        l
+    );
+  } catch {
+    return `/${l}/${l === "es" ? "proveedores" : "vendors"}/${catSlug}`;
+  }
+}
 </script>
+
 
 <style scoped>
 .home {
@@ -277,7 +164,7 @@ const vendorCategoryCards = computed(() => VENDOR_CATEGORIES.slice(0, 6));
 
 /* Sections */
 .home__section {
-    padding: var(--s-7) 0;
+    padding: var(--s-8) 0;
 }
 
 .home__sectionHead {
@@ -285,21 +172,22 @@ const vendorCategoryCards = computed(() => VENDOR_CATEGORIES.slice(0, 6));
     align-items: baseline;
     justify-content: space-between;
     gap: var(--s-4);
-    margin-bottom: var(--s-4);
+    margin-bottom: var(--s-6);
     min-width: 0;
 }
 
 .home__sectionTitle {
-    font-size: 24px;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 500;
     min-width: 0;
 }
 
 .home__sectionLink {
-    font-size: 13px;
-    font-weight: 900;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(20, 20, 20, 0.65);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--accent-strong);
     text-decoration: none;
     white-space: nowrap;
 }
@@ -400,7 +288,7 @@ const vendorCategoryCards = computed(() => VENDOR_CATEGORIES.slice(0, 6));
 .home__cats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--s-4);
+    gap: var(--s-5);
 }
 
 @media (max-width: 900px) {
@@ -410,20 +298,30 @@ const vendorCategoryCards = computed(() => VENDOR_CATEGORIES.slice(0, 6));
 }
 
 .home__cat {
-    padding: var(--s-5);
+    padding: var(--s-7);
     text-decoration: none;
     display: block;
     min-width: 0;
+    border-color: rgba(255, 255, 255, 0.7);
+    transition:
+        transform 180ms var(--ease),
+        box-shadow 180ms var(--ease);
+}
+
+.home__cat:hover {
+    transform: translateY(-3px);
 }
 
 .home__catTitle {
-    font-size: 18px;
+    font-size: 1.45rem;
+    font-weight: 500;
     color: var(--ink);
     overflow-wrap: anywhere;
 }
 
 .home__catText {
-    margin-top: var(--s-2);
+    margin-top: var(--s-3);
+    color: var(--muted);
 }
 
 /* Footer */

@@ -177,11 +177,47 @@ export const VENDOR_CATEGORIES: TaxonomyCategory[] = [
   },
 ];
 
+export function normalizeSlug(input: string) {
+  return String(input || "")
+      .trim()
+      .toLowerCase()
+      // normalize accented characters: "maquilláje" -> "maquillaje"
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      // collapse whitespace/underscores to hyphens
+      .replace(/[\s_]+/g, "-")
+      // remove anything not url-safe-ish
+      .replace(/[^a-z0-9-]/g, "")
+      // collapse multiple hyphens
+      .replace(/-+/g, "-")
+      // trim hyphens
+      .replace(/^-|-$/g, "");
+}
+
+
 export function getVendorCategoryBySlug(
-  locale: LocaleCode,
-  slug: string,
+    locale: LocaleCode,
+    slug: string,
 ): TaxonomyCategory | undefined {
-  return VENDOR_CATEGORIES.find((c) => c.slug[locale] === slug);
+  const s = normalizeSlug(slug);
+
+  // First try: locale-specific match (fast path)
+  const direct = VENDOR_CATEGORIES.find((c) => normalizeSlug(c.slug[locale]) === s);
+  if (direct) return direct;
+
+  // Fallback: match any locale
+  return VENDOR_CATEGORIES.find((c) =>
+      normalizeSlug(c.slug.en) === s ||
+      normalizeSlug(c.slug.es) === s
+  );
+}
+
+
+export function getVendorCategoryCanonicalSlug(
+    category: TaxonomyCategory,
+    locale: LocaleCode
+) {
+  return category.slug[locale];
 }
 
 export function getVendorCategoryByKey(

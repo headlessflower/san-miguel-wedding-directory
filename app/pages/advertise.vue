@@ -1,108 +1,233 @@
 <template>
-  <main class="adv">
-    <section class="adv__hero">
+  <main class="ad">
+    <section class="ad__hero">
       <div class="container">
-        <h1 class="adv__title">{{ isEs ? "Publicidad" : "Advertise" }}</h1>
-        <p class="adv__subtitle">
-          {{ isEs
-            ? "Promociona tu negocio frente a parejas planeando bodas en San Miguel de Allende."
-            : "Put your business in front of couples planning weddings in San Miguel de Allende." }}
+        <h1 class="ad__title">{{ isEs ? "Publicidad y promoción" : "Advertising & promotion" }}</h1>
+        <p class="ad__subtitle">
+          {{
+            isEs
+                ? "Destaca tu negocio en el directorio: planes mensuales o impulsos por 90 días."
+                : "Boost your listing in the directory with monthly plans or 90-day boosts."
+          }}
         </p>
       </div>
     </section>
 
-    <section class="adv__section">
-      <div class="container adv__grid">
-        <div class="adv__card card">
-          <h2 class="adv__plan">{{ isEs ? "Estándar" : "Standard" }}</h2>
-          <p class="adv__price">$0</p>
-          <ul class="adv__list">
-            <li>{{ isEs ? "Listado básico" : "Basic listing" }}</li>
-            <li>{{ isEs ? "Aparece en resultados" : "Appears in results" }}</li>
-          </ul>
-        </div>
+    <section class="ad__section">
+      <div class="container">
+        <h2 class="ad__sectionTitle">{{ groups.headings.monthly }}</h2>
 
-        <div class="adv__card card">
-          <h2 class="adv__plan">{{ isEs ? "Destacado" : "Featured" }}</h2>
-          <p class="adv__price">$79<span class="adv__per">/mo</span></p>
-          <ul class="adv__list">
-            <li>{{ isEs ? "Prioridad en listados" : "Priority in category lists" }}</li>
-            <li>{{ isEs ? "Badge destacado" : "Featured badge" }}</li>
-            <li>{{ isEs ? "Mejor tarjeta" : "Enhanced card" }}</li>
-          </ul>
-        </div>
+        <div class="ad__grid">
+          <article v-for="p in groups.monthly" :key="p.key" class="ad__card card" :class="p.recommended ? 'ad__card--rec' : ''">
+            <div class="ad__cardTop">
+              <span v-if="p.tier === 'sponsored'" class="badge badge--sponsored">{{ isEs ? "Patrocinado" : "Sponsored" }}</span>
+              <span v-else class="badge badge--featured">{{ isEs ? "Destacado" : "Featured" }}</span>
 
-        <div class="adv__card card">
-          <h2 class="adv__plan">{{ isEs ? "Patrocinado" : "Sponsored" }}</h2>
-          <p class="adv__price">$199<span class="adv__per">/mo</span></p>
-          <ul class="adv__list">
-            <li>{{ isEs ? "Top placement" : "Top placement" }}</li>
-            <li>{{ isEs ? "Badge patrocinado" : "Sponsored badge" }}</li>
-            <li>{{ isEs ? "Slot publicitario" : "Ad slot placement" }}</li>
-          </ul>
+              <span v-if="p.recommended" class="ad__rec">
+                {{ isEs ? "Recomendado" : "Recommended" }}
+              </span>
+            </div>
+
+            <h3 class="ad__cardTitle">{{ p.label[L] }}</h3>
+            <p class="ad__cardBlurb">{{ p.blurb[L] }}</p>
+
+            <div class="ad__price">
+              <span class="ad__priceNum">${{ p.priceUsd }}</span>
+              <span class="ad__priceUnit">{{ isEs ? "/ mes" : "/ month" }}</span>
+            </div>
+
+            <ul class="ad__bullets">
+              <li v-for="(b, i) in p.bullets[L]" :key="i">{{ b }}</li>
+            </ul>
+
+            <a class="ad__cta btn btn--primary" href="#lead">
+              {{ isEs ? "Solicitar" : "Request" }}
+            </a>
+          </article>
         </div>
       </div>
     </section>
 
-    <section class="adv__section">
-      <div class="container adv__cta card">
-        <h2 class="adv__ctaTitle">{{ isEs ? "¿Quieres anunciarte?" : "Want to advertise?" }}</h2>
-        <p class="adv__ctaText">
-          {{ isEs
-            ? "Envíanos tu info y te respondemos con disponibilidad y opciones."
-            : "Send your details and we’ll reply with availability and options." }}
-        </p>
+    <section class="ad__section">
+      <div class="container">
+        <h2 class="ad__sectionTitle">{{ groups.headings.boost90 }}</h2>
 
-        <a class="btn btn--primary" :href="mailto">
-          {{ isEs ? "Contactar" : "Contact" }}
-        </a>
+        <div class="ad__grid">
+          <article v-for="p in groups.boost90" :key="p.key" class="ad__card card">
+            <div class="ad__cardTop">
+              <span v-if="p.tier === 'sponsored'" class="badge badge--sponsored">{{ isEs ? "Patrocinado" : "Sponsored" }}</span>
+              <span v-else class="badge badge--featured">{{ isEs ? "Destacado" : "Featured" }}</span>
+            </div>
+
+            <h3 class="ad__cardTitle">{{ p.label[L] }}</h3>
+            <p class="ad__cardBlurb">{{ p.blurb[L] }}</p>
+
+            <div class="ad__price">
+              <span class="ad__priceNum">${{ p.priceUsd }}</span>
+              <span class="ad__priceUnit">{{ isEs ? "/ 90 días" : "/ 90 days" }}</span>
+            </div>
+
+            <ul class="ad__bullets">
+              <li v-for="(b, i) in p.bullets[L]" :key="i">{{ b }}</li>
+            </ul>
+
+            <a class="ad__cta btn" href="#lead">
+              {{ isEs ? "Solicitar" : "Request" }}
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="lead" class="ad__section">
+      <div class="container">
+        <div class="ad__lead card">
+          <AdvertiseLeadForm :locale="L" />
+        </div>
       </div>
     </section>
   </main>
 </template>
 
 <script setup lang="ts">
+import type { Locale } from "~/types/i18n";
+import { groupPackagesByCadence } from "~/data/monetization.packages";
+
 const { locale } = useI18n();
-const isEs = computed(() => locale.value === "es");
+const L = computed<Locale>(() => (locale.value as Locale) || "en");
+const isEs = computed(() => L.value === "es");
 
-const mailto = computed(() => {
-  const subject = encodeURIComponent(isEs.value ? "Publicidad / Directorio SMA" : "Advertising / SMA Directory");
-  const body = encodeURIComponent(
-      isEs.value
-          ? "Hola, me interesa anunciarme. Mi negocio es:\nSitio web:\nInstagram:\nCategoría:\n"
-          : "Hi, I'm interested in advertising. My business is:\nWebsite:\nInstagram:\nCategory:\n"
-  );
-  return `mailto:solarsustain@gmail.com?subject=${subject}&body=${body}`;
+const groups = computed(() => groupPackagesByCadence(L.value));
+
+useSeoMeta(() => {
+  const title = isEs.value ? "Publicidad • Directorio de bodas" : "Advertise • Wedding directory";
+  const description = isEs.value
+      ? "Planes mensuales e impulsos de 90 días para destacar tu negocio en el directorio."
+      : "Monthly plans and 90-day boosts to promote your business in the directory.";
+
+  return { title, description, ogTitle: title, ogDescription: description };
 });
-
-useSeoMeta(() => ({
-  title: isEs.value ? "Publicidad • San Miguel" : "Advertise • San Miguel",
-  description: isEs.value
-      ? "Paquetes de publicidad y listados destacados para negocios de bodas en San Miguel de Allende."
-      : "Advertising and featured listing packages for wedding businesses in San Miguel de Allende.",
-}));
 </script>
 
 <style scoped>
-.adv__hero { padding: var(--s-8) 0 var(--s-5); }
-.adv__title { font-size: 40px; }
-.adv__subtitle { margin-top: var(--s-3); max-width: 70ch; }
+.ad__hero {
+  padding: var(--s-9) 0 var(--s-6);
+}
 
-.adv__section { padding: var(--s-6) 0; }
-.adv__grid {
+.ad__title {
+  font-size: 44px;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px) {
+  .ad__title {
+    font-size: 36px;
+  }
+}
+
+.ad__subtitle {
+  margin-top: var(--s-3);
+  max-width: 75ch;
+}
+
+.ad__section {
+  padding: var(--s-7) 0;
+}
+
+.ad__sectionTitle {
+  font-size: 22px;
+  color: var(--ink);
+}
+
+.ad__grid {
+  margin-top: var(--s-5);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--s-4);
 }
-@media (max-width: 900px) { .adv__grid { grid-template-columns: 1fr; } }
 
-.adv__card { padding: var(--s-5); }
-.adv__plan { font-size: 18px; color: var(--ink); }
-.adv__price { margin-top: var(--s-3); font-size: 28px; font-weight: 900; }
-.adv__per { font-size: 14px; font-weight: 700; opacity: 0.65; margin-left: 6px; }
-.adv__list { margin-top: var(--s-4); padding-left: 18px; }
+@media (max-width: 900px) {
+  .ad__grid {
+    grid-template-columns: 1fr;
+  }
+}
 
-.adv__cta { padding: var(--s-6); }
-.adv__ctaTitle { font-size: 20px; color: var(--ink); }
-.adv__ctaText { margin-top: var(--s-2); }
+.ad__card {
+  padding: var(--s-6);
+}
+
+.ad__card--rec {
+  outline: 2px solid rgba(20, 20, 20, 0.12);
+}
+
+.ad__cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.ad__rec {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.ad__cardTitle {
+  margin-top: var(--s-4);
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.ad__cardBlurb {
+  margin-top: var(--s-2);
+}
+
+.ad__price {
+  margin-top: var(--s-4);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ad__priceNum {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.ad__priceUnit {
+  font-size: 13px;
+  font-weight: 900;
+  color: rgba(20, 20, 20, 0.6);
+}
+
+.ad__bullets {
+  margin-top: var(--s-4);
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.ad__cta {
+  margin-top: var(--s-5);
+  width: 100%;
+  text-align: center;
+}
+
+.ad__lead {
+  padding: 0;
+}
+
+/* sponsored badge (if not already global) */
+.badge--sponsored {
+  background: rgba(202, 137, 95, 0.22);
+  border: 1px solid var(--border);
+  color: rgba(20, 20, 20, 0.82);
+}
 </style>

@@ -1,117 +1,136 @@
 <template>
-    <main class="blog">
-        <section class="blog__section">
-            <div class="container">
-                <div v-if="pending" class="blog__loading">
-                    {{ locale === "es" ? "Cargando…" : "Loading…" }}
-                </div>
+  <main class="blog">
+    <section class="blog__section">
+      <div class="container">
+        <div v-if="pending" class="blog__loading">
+          {{ L === "es" ? "Cargando…" : "Loading…" }}
+        </div>
 
-                <div v-else-if="posts.length === 0" class="blog__empty card">
-                    <p class="blog__emptyTitle">
-                        {{
-                            locale === "es"
-                                ? "Aún no hay artículos."
-                                : "No posts yet."
-                        }}
-                    </p>
-                    <p class="blog__emptyText">
-                        {{
-                            locale === "es"
-                                ? 'Verifica que tus archivos existan en /content/blog/es y tengan frontmatter con locale: "es".'
-                                : 'Check that files exist in /content/blog/en and include frontmatter locale: "en".'
-                        }}
-                    </p>
-                </div>
+        <div v-else-if="posts.length === 0" class="blog__empty card">
+          <p class="blog__emptyTitle">
+            {{ L === "es" ? "Aún no hay artículos." : "No posts yet." }}
+          </p>
+          <p class="blog__emptyText">
+            {{
+              L === "es"
+                  ? 'Verifica que tus archivos existan en /content/blog/es y tengan frontmatter con locale: "es".'
+                  : 'Check that files exist in /content/blog/en and include frontmatter locale: "en".'
+            }}
+          </p>
+        </div>
 
-                <div v-else class="blog__grid">
-                    <NuxtLink
-                        v-for="p in posts"
-                        :key="p._path"
-                        :to="localePath(`/blog/${p.slug}`)"
-                        class="blog__card card"
-                    >
-                        <p class="blog__meta">
-                            <span class="blog__date">{{
-                                formatDate(p.date)
-                            }}</span>
-                            <span v-if="p.tags?.length" class="blog__tags">
-                                • {{ p.tags.slice(0, 2).join(", ") }}
-                            </span>
-                        </p>
+        <div v-else class="blog__grid">
+          <NuxtLink
+              v-for="p in posts"
+              :key="p.path"
+              :to="postTo(p)"
+              class="blog__card card"
+          >
+            <p class="blog__meta">
+              <span class="blog__date">{{ formatDate(p.date) }}</span>
+              <span v-if="p.tags?.length" class="blog__tags">
+                • {{ p.tags.slice(0, 2).join(", ") }}
+              </span>
+            </p>
 
-                        <h2 class="blog__cardTitle">{{ p.title }}</h2>
-                        <p class="blog__cardDesc">{{ p.description }}</p>
+            <h2 class="blog__cardTitle">{{ p.title }}</h2>
+            <p class="blog__cardDesc">{{ p.description }}</p>
 
-                        <span class="blog__cta">
-                            {{ locale === "es" ? "Leer" : "Read" }} →
-                        </span>
-                    </NuxtLink>
-                </div>
-            </div>
-        </section>
-    </main>
+            <span class="blog__cta">
+              {{ L === "es" ? "Leer" : "Read" }} →
+            </span>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">
 definePageMeta({ layout: "blog" });
-type Locale = "en" | "es";
+
+import type { Locale } from "~/types/i18n";
+
+type BlogIndexPost = {
+  path: string; // content v3 uses `path`
+  title?: string;
+  description?: string;
+  date?: string;
+  tags?: string[];
+  locale?: Locale;
+  slug: string;
+};
 
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
-const route = useRoute();
 
-const L = computed(() => (locale.value as Locale) || "en");
+const L = computed<Locale>(() => (locale.value as Locale) || "en");
+const langTag = computed(() => (L.value === "es" ? "es-MX" : "en-US"));
 
 const seoTitle = computed(() => `${t("nav.blog")} • ${t("seo.siteTitle")}`);
 const seoDescription = computed(() =>
     L.value === "es"
         ? "Guías y recursos para bodas en San Miguel de Allende."
-        : "Guides and resources for weddings in San Miguel de Allende.",
+        : "Guides and resources for weddings in San Miguel de Allende."
 );
 
 function formatDate(input?: string) {
-    if (!input) return "";
-    try {
-        const d = new Date(input);
-        return d.toLocaleDateString(locale.value === "es" ? "es-MX" : "en-US", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-        });
-    } catch {
-        return input;
-    }
+  if (!input) return "";
+  const d = new Date(input);
+  if (Number.isNaN(d.getTime())) return input;
+  return d.toLocaleDateString(langTag.value, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+}
+
+/** Localized post link (route: pages/blog/[slug].vue => name "blog-slug") */
+function postTo(post: Pick<BlogIndexPost, "slug">) {
+  const l = L.value;
+
+  try {
+    return localePath({ name: "blog-slug", params: { slug: post.slug } }, l);
+  } catch {
+    // fallback if route name differs / mapping changes
+    return `/${l}/blog/${post.slug}`;
+  }
 }
 
 const { data, pending } = await useAsyncData(
-    "blogIndex",
+    () => `blogIndex:${L.value}`,
     async () => {
-        const l = (locale.value as Locale) || "en";
+      const l = L.value;
 
-        const docs = await queryCollection("blog")
-            .where("locale", "=", l)
-            .select("path", "title", "description", "date", "tags", "locale")
-            .order("date", "DESC")
-            .all();
+      // ✅ Robust: derive locale from folder path: /content/blog/en/* => path /blog/en/*
+      const docs = await queryCollection("blog")
+          .where("path", "LIKE", `/blog/${l}/%`)
+          .select("path", "title", "description", "date", "tags", "locale")
+          .order("date", "DESC")
+          .all();
 
-        // slug = last segment of path
-        return docs.map((d: any) => ({
-            ...d,
-            slug: String(d.path).split("/").pop(),
-        }));
+      return (docs as any[]).map((d) => {
+        const rawPath = String(d.path || "");
+        const slug = rawPath.split("/").pop() || "";
+        return { ...d, slug } as BlogIndexPost;
+      });
     },
-    { watch: [locale] },
+    { watch: [locale] }
 );
 
-const posts = computed(() => data.value ?? []);
+const posts = computed<BlogIndexPost[]>(() => data.value ?? []);
 
 useSeoMeta({
-    title: seoTitle,
-    description: seoDescription,
-    ogTitle: seoTitle,
-    ogDescription: seoDescription,
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
 });
+
+// optional: export helpers for template use if you want (Nuxt auto exposes in <script setup>)
 </script>
+
+
 
 <style scoped>
 .blog__hero {

@@ -6,8 +6,6 @@ const config = useRuntimeConfig();
 const siteUrlRaw = (config.public?.siteUrl as string) || "";
 const siteUrl = siteUrlRaw.replace(/\/$/, "");
 
-
-
 const { t, locale } = useI18n();
 const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
@@ -37,14 +35,22 @@ useHead(() => {
   const websiteJsonLd = buildWebSiteJsonLd({
     baseUrl: siteUrl,
     siteName: t("seo.siteTitle"),
-    searchTargetPath: `/${l}/search?query={search_term_string}`,
+    searchTargetPath: `/${l}/search?q={search_term_string}`,
     publisherId: orgId,
   });
 
   return {
     script: [
-      { type: "application/ld+json", children: JSON.stringify(organizationJsonLd) },
-      { type: "application/ld+json", children: JSON.stringify(websiteJsonLd) },
+      {
+        key: `jsonld-organization-${l}`,
+        type: "application/ld+json",
+        children: JSON.stringify(organizationJsonLd),
+      },
+      {
+        key: `jsonld-website-${l}`,
+        type: "application/ld+json",
+        children: JSON.stringify(websiteJsonLd),
+      },
     ],
   };
 });

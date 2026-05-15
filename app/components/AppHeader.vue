@@ -1,21 +1,21 @@
 <template>
     <header class="appHeader">
         <div class="container appHeader__inner">
-            <NuxtLink :to="localePath('/')" class="appHeader__brand">
+            <NuxtLink :to="home" class="appHeader__brand">
                 <span class="appHeader__brandName">{{ t("brand.name") }}</span>
             </NuxtLink>
 
             <nav class="appHeader__nav" aria-label="Primary">
                 <NuxtLink
-                    :to="localePath('/wedding-venues')"
+                    :to="venues"
                     class="appHeader__link"
                 >
                     {{ t("nav.venues") }}
                 </NuxtLink>
-                <NuxtLink :to="localePath('/vendors')" class="appHeader__link">
+                <NuxtLink :to="vendors" class="appHeader__link">
                     {{ t("nav.vendors") }}
                 </NuxtLink>
-                <NuxtLink :to="localePath('/blog')" class="appHeader__link">
+                <NuxtLink :to="blog" class="appHeader__link">
                     {{ t("nav.blog") }}
                 </NuxtLink>
 
@@ -34,7 +34,7 @@
 
 
                 </div>
-              <NuxtLink :to="localePath(`/search`)" class="appHeader__navLink">
+              <NuxtLink :to="search" class="appHeader__navLink">
                 {{ isEs  ? "Buscar" : "Search" }}
               </NuxtLink>
             </nav>
@@ -46,27 +46,54 @@
 const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const switchLocalePath = useSwitchLocalePath();
+
 const isEs = computed(() => locale.value === "es");
+
+const home = computed(() =>
+    localePath({ name: "index" })
+);
+
+const venues = computed(() =>
+    localePath({ name: "wedding-venues" })
+);
+
+const vendors = computed(() =>
+    localePath({ name: "vendors" })
+);
+
+const blog = computed(() =>
+    localePath({ name: "blog" })
+);
+
+const search = computed(() =>
+    localePath({ name: "search" })
+);
 </script>
+
 
 <style scoped>
 .appHeader {
     position: sticky;
-    top: 0;
+    top: 12px;
     z-index: 50;
-    background: rgba(242, 242, 240, 0.85);
+    padding: 0 var(--s-5);
+    background: transparent;
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
 }
 
 .appHeader__inner {
-    min-height: 64px;
+    min-height: 76px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--s-4);
     min-width: 0;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: var(--shadow-sm);
+    padding-inline: clamp(1rem, 3vw, 2rem);
 }
 
 .appHeader__brand {
@@ -77,10 +104,10 @@ const isEs = computed(() => locale.value === "es");
 }
 
 .appHeader__brandName {
-    font-weight: 900;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 1.02rem;
     color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
@@ -90,20 +117,20 @@ const isEs = computed(() => locale.value === "es");
 .appHeader__nav {
     display: flex;
     align-items: center;
-    gap: var(--s-4);
+    gap: clamp(0.85rem, 2.5vw, 2rem);
     min-width: 0;
 }
 
 .appHeader__link {
-    font-size: 13px;
-    font-weight: 800;
-    color: rgba(20, 20, 20, 0.72);
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: var(--muted);
     text-decoration: none;
     white-space: nowrap;
 }
 
 .appHeader__link:hover {
-    color: rgba(20, 20, 20, 0.92);
+    color: var(--accent-strong);
 }
 
 .appHeader__lang {
@@ -112,14 +139,14 @@ const isEs = computed(() => locale.value === "es");
     gap: 6px;
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 6px 10px;
+    padding: 7px 11px;
     background: var(--surface);
     flex: 0 0 auto;
 }
 
 .appHeader__langLink {
     font-size: 12px;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(20, 20, 20, 0.75);
@@ -131,11 +158,30 @@ const isEs = computed(() => locale.value === "es");
     color: rgba(20, 20, 20, 0.35);
 }
 
+.appHeader__navLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 1rem;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.appHeader__navLink:hover {
+    background: var(--accent-strong);
+}
+
 @media (max-width: 720px) {
     .appHeader__inner {
         min-height: auto;
         padding-block: 10px;
         align-items: flex-start;
+        border-radius: 18px;
     }
 
     .appHeader__nav {

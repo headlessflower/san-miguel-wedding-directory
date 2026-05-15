@@ -1,62 +1,59 @@
 <template>
-    <main class="vendors">
-        <section class="vendors__hero">
-            <div class="container">
-                <h1 class="vendors__title">{{ t("nav.vendors") }}</h1>
-                <p class="vendors__subtitle">
-                    {{
-                        locale === "es"
-                            ? "Explora categorías de proveedores para bodas y eventos."
-                            : "Browse categories of wedding and event vendors."
-                    }}
-                </p>
-            </div>
-        </section>
+  <main class="vendors">
+    <section class="vendors__hero">
+      <AdSlot placement="vendors_category_top" />
+      <div class="container">
+        <h1 class="vendors__title">{{ t("nav.vendors") }}</h1>
+        <p class="vendors__subtitle">
+          {{
+            locale === "es"
+                ? "Explora categorías de proveedores para bodas y eventos."
+                : "Browse categories of wedding and event vendors."
+          }}
+        </p>
+      </div>
+    </section>
 
-        <section class="vendors__section">
-            <div class="container">
-                <div class="vendors__grid">
-                    <NuxtLink
-                        v-for="c in categories"
-                        :key="c.slug[locale]"
-                        :to="localePath(`/vendors/${c.slug[locale]}`)"
-                        class="vendors__card card"
-                    >
-                        <h2 class="vendors__cardTitle">
-                            {{ c.label[locale] }}
-                        </h2>
-                        <p class="vendors__cardText">
-                            {{
-                                locale === "es"
-                                    ? "Ver listados"
-                                    : "View listings"
-                            }}
-                        </p>
-                        <span class="vendors__cardCta"
-                            >{{
-                                locale === "es" ? "Explorar" : "Browse"
-                            }}
-                            →</span
-                        >
-                    </NuxtLink>
-                </div>
-            </div>
-        </section>
-    </main>
+    <section class="vendors__section">
+      <div class="container">
+        <div class="vendors__grid">
+          <NuxtLink
+              v-for="c in categories"
+              :key="c.key"
+              :to="localePath({ name: 'vendors-category', params: { category: c.slug[L] } })"
+              class="vendors__card card"
+          >
+            <h2 class="vendors__cardTitle">
+              {{ c.label[L] }}
+            </h2>
+
+            <p class="vendors__cardText">
+              {{ L === "es" ? "Ver listados" : "View listings" }}
+            </p>
+
+            <span class="vendors__cardCta">
+              {{ L === "es" ? "Explorar" : "Browse" }} →
+            </span>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { VENDOR_CATEGORIES } from "../../data/taxonomies";
+import { VENDOR_CATEGORIES } from "~/data/taxonomies";
 import type { Locale } from "~/types/i18n";
+import AdSlot from "~/components/AdSlot.vue";
 
 const localePath = useLocalePath();
-
-
 const { t, locale } = useI18n();
-const switchLocalePath = useSwitchLocalePath();
+
+const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const categories = computed(() => VENDOR_CATEGORIES);
 </script>
+
 
 <style scoped>
 .vendors__header {
@@ -126,16 +123,21 @@ const categories = computed(() => VENDOR_CATEGORIES);
 }
 
 .vendors__hero {
-    padding: var(--s-7) 0 var(--s-5);
+    padding: var(--s-9) 0 var(--s-6);
+    text-align: center;
 }
 
 .vendors__title {
-    font-size: 40px;
+    font-size: clamp(2.7rem, 6vw, 4.6rem);
+    font-weight: 500;
 }
 
 .vendors__subtitle {
     margin-top: var(--s-3);
-    max-width: 70ch;
+    max-width: 52ch;
+    margin-inline: auto;
+    font-size: 1.08rem;
+    line-height: 1.55;
 }
 
 .vendors__section {
@@ -145,7 +147,7 @@ const categories = computed(() => VENDOR_CATEGORIES);
 .vendors__grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--s-4);
+    gap: var(--s-5);
 }
 
 @media (max-width: 900px) {
@@ -155,12 +157,21 @@ const categories = computed(() => VENDOR_CATEGORIES);
 }
 
 .vendors__card {
-    padding: var(--s-5);
+    padding: var(--s-7);
     text-decoration: none;
+    border-color: rgba(255, 255, 255, 0.7);
+    transition:
+        transform 180ms var(--ease),
+        box-shadow 180ms var(--ease);
+}
+
+.vendors__card:hover {
+    transform: translateY(-3px);
 }
 
 .vendors__cardTitle {
-    font-size: 18px;
+    font-size: 1.45rem;
+    font-weight: 500;
     color: var(--ink);
 }
 
@@ -171,8 +182,8 @@ const categories = computed(() => VENDOR_CATEGORIES);
 .vendors__cardCta {
     display: inline-block;
     margin-top: var(--s-4);
-    font-size: 13px;
-    font-weight: 900;
-    color: rgba(20, 20, 20, 0.8);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-strong);
 }
 </style>

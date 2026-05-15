@@ -15,7 +15,9 @@
           <input
               v-model="q"
               class="search__input"
-              :placeholder="L === 'es' ? 'Buscar: hacienda, fotógrafo, DJ…' : 'Search: hacienda, photographer, DJ…'"
+              :placeholder="L === 'es'
+              ? 'Buscar: hacienda, fotógrafo, DJ…'
+              : 'Search: hacienda, photographer, DJ…'"
               type="search"
               autocomplete="off"
           />
@@ -29,7 +31,11 @@
           {{ L === "es" ? "Escribe para ver resultados." : "Type to see results." }}
         </p>
 
-        <p v-else-if="results.length === 0" class="search__muted">
+        <p v-else-if="pending" class="search__muted">
+          {{ L === "es" ? "Buscando…" : "Searching…" }}
+        </p>
+
+        <p v-else-if="resultsUnified.length === 0" class="search__muted">
           {{ L === "es" ? "Sin resultados." : "No results found." }}
         </p>
 
@@ -71,7 +77,7 @@
           </div>
 
           <div v-if="grouped.post.length" class="search__group">
-            <h2 class="search__groupTitle">{{ L === "es" ? "Blog" : "Blog" }}</h2>
+            <h2 class="search__groupTitle">Blog</h2>
             <div class="search__grid">
               <NuxtLink
                   v-for="r in grouped.post"
@@ -88,6 +94,10 @@
             </div>
           </div>
         </div>
+
+        <p v-if="error" class="search__muted" style="margin-top: var(--s-5)">
+          {{ L === "es" ? "Error al buscar." : "Search error." }}
+        </p>
       </div>
     </section>
   </main>
@@ -95,110 +105,142 @@
 
 <script setup lang="ts">
 import type { Locale } from "~/types/i18n";
-import { searchDocs, type SearchDoc } from "~/utils/search/buildSearchIndex";
-import { SEED_VENUES, SEED_VENDORS } from "~/data/listings.seed";
-import { getVendorCategorySlug } from "~/utils/search/vendorCategorySlug";
+import { VENDOR_CATEGORIES } from "~/data/taxonomies";
+import { buildSearchIndex, createSearchIndex, searchIndex } from "~/utils/search/buildSearchIndex";
 
-const { locale } = useI18n();
 const route = useRoute();
 const router = useRouter();
+const { locale } = useI18n();
 
 const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
-const q = ref(String(route.query.query || ""));
+// local, editable input model
+const q = ref(String(route.query.q || "").trim());
 
-watch(q, (val) => {
-  router.replace({ query: { ...route.query, query: val || undefined } });
-});
+// keep URL query in sync (so search is shareable)
+watch(
+    q,
+    (val) => {
+      const next = val.trim();
+      router.replace({
+        query: {
+          ...route.query,
+          q: next || undefined,
+        },
+      });
+    },
+    { flush: "post" }
+);
 
-// Fetch posts for current locale
-const { data: posts } = await useAsyncData(`search-posts-${L.value}`, async () => {
-  // This assumes you store posts at /blog/<locale>/...
-  // and you already route /blog properly.
-  // Adjust if your content paths differ.
-  const whereLocale = L.value;
+// also update input if user navigates via back/forward
+watch(
+    () => route.query.q,
+    (val) => {
+      const next = String(val || "").trim();
+      if (next !== q.value) q.value = next;
+    }
+);
 
-  const list = await queryContent("/blog")
-      .where({ locale: whereLocale })
-      .only(["title", "description", "_path", "tags"])
-      .find();
+type SearchHit = {
+  type: "venue" | "vendor" | "post";
+  title: string;
+  description?: string;
+  urlPath: string;
+};
 
-  return list as Array<{ title?: string; description?: string; _path?: string; tags?: string[] }>;
-});
+type BlogDoc = {
+  title?: string;
+  description?: string;
+  path?: string;
+  tags?: string[];
+  locale?: "en" | "es";
+};
 
-// Build docs. NOTE: vendor URL needs category slug.
-// If your VendorListing already has categorySlug, great.
-// If not, we can compute vendor URL with taxonomies — but easiest is to add categorySlug to your seed objects.
-// For now, we’ll fall back to /vendors (category omitted) if missing.
-const docs = computed<SearchDoc[]>(() => {
-  const l = L.value;
+const { getVenues, getVendorsByCategoryKey } = useListings();
 
-  const venueDocs: SearchDoc[] = SEED_VENUES.map((v) => ({
-    type: "venue",
-    title: v.name[l],
-    description: v.description[l],
-    urlPath: `/${l}/wedding-venues/${v.slug}`,
-  }));
+/**
+ * Load blog docs for the current locale (reactive to locale changes).
+ * We fetch minimal fields, then map into the shape buildSearchIndex expects.
+ */
+const { data: blogDocs, pending, error } = await useAsyncData(
+    () => `search:blog:${L.value}`,
+    async () => {
+      const list = await queryCollection("blog")
+          .where("locale", "=", L.value)
+          .select("title", "description", "path", "tags")
+          .all();
 
-  const vendorDocs: SearchDoc[] = SEED_VENDORS.map((v) => {
-    const catSlug = getVendorCategorySlug(v.categoryKey, l);
-    const url = catSlug
-        ? `/${l}/vendors/${catSlug}/${v.slug}`
-        : `/${l}/vendors`;
-
-    return {
-      type: "vendor",
-      title: v.name[l],
-      description: v.description[l],
-      urlPath: url,
-    };
-  });
-
-
-  const postDocs: SearchDoc[] = (posts.value ?? [])
-      .filter((p) => p._path)
-      .map((p) => ({
-        type: "post",
-        title: p.title || (l === "es" ? "Artículo" : "Post"),
-        description: p.description || "",
-        urlPath: `/${l}${p._path}`.replace(/\/+/g, "/"),
+      return (list as BlogDoc[]).map((p) => ({
+        title: p.title,
+        description: p.description,
+        path: p.path,
+        tags: p.tags ?? [],
       }));
+    }
+);
 
-  return [...venueDocs, ...vendorDocs, ...postDocs];
+/**
+ * Seed data (venues + vendors).
+ * Keep these computed so they react if you change seed data.
+ */
+const venues = computed(() => getVenues());
+
+const vendors = computed(() => {
+  return VENDOR_CATEGORIES.flatMap((c) => getVendorsByCategoryKey(c.key));
 });
 
-const results = computed(() => searchDocs(docs.value, q.value));
+/**
+ * Build the unified search index.
+ */
+const docs = computed(() => {
+  return buildSearchIndex(
+      L.value,
+      venues.value,
+      vendors.value,
+      blogDocs.value ?? []
+  );
+});
 
-const grouped = computed(() => ({
-  venue: results.value.filter((r) => r.type === "venue").slice(0, 12),
-  vendor: results.value.filter((r) => r.type === "vendor").slice(0, 12),
-  post: results.value.filter((r) => r.type === "post").slice(0, 12),
-}));
+/**
+ * Build the token index once per document set, then query it as the user types.
+ */
+const searchIndexData = computed(() => createSearchIndex(docs.value));
 
-useSeoMeta(() => {
-  const title = L.value === "es" ? "Buscar • " : "Search • ";
-  return {
-    title: `${title}${"San Miguel"}`,
-    description:
-        L.value === "es"
-            ? "Busca lugares, proveedores y artículos para bodas en San Miguel de Allende."
-            : "Search wedding venues, vendors, and blog posts in San Miguel de Allende.",
-  };
+const resultsUnified = computed<SearchHit[]>(() => {
+  const needle = q.value.trim();
+  if (!needle) return [];
+  return searchIndex(searchIndexData.value, needle) as SearchHit[];
+});
+
+const grouped = computed(() => {
+  const venue: SearchHit[] = [];
+  const vendor: SearchHit[] = [];
+  const post: SearchHit[] = [];
+
+  for (const r of resultsUnified.value) {
+    if (r.type === "venue") venue.push(r);
+    else if (r.type === "vendor") vendor.push(r);
+    else post.push(r);
+  }
+
+  return { venue, vendor, post };
 });
 </script>
 
+
 <style scoped>
-.search__hero { padding: var(--s-8) 0 var(--s-5); }
-.search__title { font-size: 40px; }
-.search__subtitle { margin-top: var(--s-3); max-width: 70ch; }
+.search__hero { padding: var(--s-9) 0 var(--s-6); text-align: center; }
+.search__title { font-size: clamp(2.7rem, 6vw, 4.6rem); font-weight: 500; }
+.search__subtitle { margin: var(--s-3) auto 0; max-width: 52ch; font-size: 1.08rem; line-height: 1.55; }
 .search__form { margin-top: var(--s-5); }
 .search__input {
   width: min(740px, 100%);
   font-size: 16px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 16px 18px;
+  border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 .search__results { padding: var(--s-6) 0 var(--s-9); }
 .search__muted { opacity: 0.7; }
@@ -214,7 +256,7 @@ useSeoMeta(() => {
   .search__grid { grid-template-columns: 1fr; }
 }
 .search__card { display: block; text-decoration: none; }
-.search__cardBody { padding: var(--s-5); }
+.search__cardBody { padding: var(--s-6); }
 .search__kicker {
   font-size: 12px;
   font-weight: 900;
@@ -222,6 +264,6 @@ useSeoMeta(() => {
   text-transform: uppercase;
   opacity: 0.65;
 }
-.search__cardTitle { margin-top: var(--s-2); font-size: 18px; color: var(--ink); }
+.search__cardTitle { margin-top: var(--s-2); font-size: 1.35rem; font-weight: 500; color: var(--ink); }
 .search__cardText { margin-top: var(--s-2); }
 </style>

@@ -2,27 +2,26 @@
     <header class="blogHeader">
         <div class="container blogHeader__inner">
             <div class="blogHeader__left">
-                <NuxtLink :to="localePath('/')" class="blogHeader__brand">
-                    <span class="blogHeader__brandName">{{
-                        t("brand.name")
-                    }}</span>
-                </NuxtLink>
+              <NuxtLink :to="localePath({ name: 'index' })" class="blogHeader__brand">
+                <span class="blogHeader__brandName">{{ t("brand.name") }}</span>
+              </NuxtLink>
 
-                <nav class="blogHeader__nav" aria-label="Blog">
+
+              <nav class="blogHeader__nav" aria-label="Blog">
                     <NuxtLink
-                        :to="localePath('/blog')"
+                        :to="blog"
                         class="blogHeader__link"
                     >
                         {{ t("nav.blog") }}
                     </NuxtLink>
                     <NuxtLink
-                        :to="localePath('/wedding-venues')"
+                        :to="venues"
                         class="blogHeader__link"
                     >
                         {{ t("nav.venues") }}
                     </NuxtLink>
                     <NuxtLink
-                        :to="localePath('/vendors')"
+                        :to="vendors"
                         class="blogHeader__link"
                     >
                         {{ t("nav.vendors") }}
@@ -50,10 +49,34 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n();
+
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const switchLocalePath = useSwitchLocalePath();
+
+const isEs = computed(() => locale.value === "es");
+
+const home = computed(() =>
+    localePath({ name: "index" })
+);
+
+const venues = computed(() =>
+    localePath({ name: "wedding-venues" })
+);
+
+const vendors = computed(() =>
+    localePath({ name: "vendors" })
+);
+
+const blog = computed(() =>
+    localePath({ name: "blog" })
+);
+
+const search = computed(() =>
+    localePath({ name: "search" })
+);
 </script>
+
 
 <style scoped>
 .blogHeader {

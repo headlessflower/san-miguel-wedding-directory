@@ -14,91 +14,102 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: "blog" });
-type Locale = "en" | "es";
-const { t, locale } = useI18n();
-const localePath = useLocalePath();
-const route = useRoute();
 
-const L = computed(() => (locale.value as Locale) || "en");
-const { getVenueBySlug } = useListings();
+type Locale = "en" | "es";
+
+const { t, locale } = useI18n();
+const route = useRoute();
+const config = useRuntimeConfig();
+const siteUrlRaw = (config.public?.siteUrl as string) || "";
+const siteUrl = siteUrlRaw.replace(/\/$/, "");
+
+const L = computed<Locale>(() => (locale.value as Locale) || "en");
+const langTag = computed(() => (L.value === "es" ? "es-MX" : "en-US"));
+
 const seoTitle = computed(() => {
-    if (!doc.value) return `${t("nav.blog")} • ${t("seo.siteTitle")}`;
-    return `${doc.value.title} • ${t("seo.siteTitle")}`;
+  if (!doc.value) return `${t("nav.blog")} • ${t("seo.siteTitle")}`;
+  return `${doc.value.title} • ${t("seo.siteTitle")}`;
 });
 
 const seoDescription = computed(() => {
-    if (!doc.value) return t("seo.siteDescription");
-    return doc.value.description || t("seo.siteDescription");
+  if (!doc.value) return t("seo.siteDescription");
+  return doc.value.description || t("seo.siteDescription");
 });
 
 function formatDate(input?: string) {
-    if (!input) return "";
-    try {
-        const d = new Date(input);
-        return d.toLocaleDateString(locale.value === "es" ? "es-MX" : "en-US", {
-            year: "numeric",
-            month: "long",
-            day: "2-digit",
-        });
-    } catch {
-        return input;
-    }
+  if (!input) return "";
+  const d = new Date(input);
+  if (Number.isNaN(d.getTime())) return input;
+  return d.toLocaleDateString(langTag.value, {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  });
 }
 
+const slug = computed(() => String(route.params.slug || ""));
+
 const { data: doc } = await useAsyncData(
-    "blogDoc",
+    () => `blogDoc:${L.value}:${slug.value}`,
     async () => {
-        const l = (locale.value as Locale) || "en";
-        const slug = String(route.params.slug || "");
+      const l = L.value;
+      const s = slug.value;
 
-        // In Content v3, each document has a `path` like: /blog/en/<slug>
-        const found = await queryCollection("blog")
-            .where("locale", "=", l)
-            .where("path", "LIKE", `%/${slug}`)
-            .first();
+      // ✅ Content v3: documents have `path` like /blog/en/<slug>
+      const found = await queryCollection("blog")
+          .where("path", "=", `/blog/${l}/${s}`)
+          .first();
 
-        if (!found)
-            throw createError({
-                statusCode: 404,
-                statusMessage: "Post not found",
-            });
-        return found;
+      if (!found) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: "Post not found",
+        });
+      }
+
+      return found;
     },
-    { watch: [locale] },
+    { watch: [locale, slug] }
 );
 
+// JSON-LD
 useHead(() => {
-    if (!doc.value) return {};
+  if (!doc.value) return {};
 
-    const siteName = "San Miguel Wedding Directory";
-    const isEs = locale.value === "es";
-    const slug = String(route.params.slug || "");
-    const url = `https://example.com/${isEs ? "es" : "en"}/blog/${slug}`;
+  const siteName = t("seo.siteTitle");
+  const l = L.value;
+  const s = slug.value;
+  const url = `${siteUrl}/${l}/blog/${s}`;
 
-    const title = doc.value.title || "Blog";
-    const description = doc.value.description || "";
+  const title = doc.value.title || "Blog";
+  const description = doc.value.description || "";
 
-    const jsonLd = {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: title,
-        description,
-        datePublished: doc.value.date,
-        mainEntityOfPage: url,
-        publisher: { "@type": "Organization", name: siteName },
-    };
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    datePublished: doc.value.date,
+    mainEntityOfPage: url,
+    publisher: { "@type": "Organization", name: siteName },
+  };
 
-    return {
-        script: [
-            { type: "application/ld+json", children: JSON.stringify(jsonLd) },
-        ],
-    };
+  return {
+    script: [
+      {
+        key: `jsonld-article-${l}-${s}`,
+        type: "application/ld+json",
+        children: JSON.stringify(jsonLd),
+      },
+    ],
+  };
 });
+
 useSeoMeta({
-    title: seoTitle,
-    description: seoDescription,
-    ogTitle: seoTitle,
-    ogDescription: seoDescription,
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
 });
 </script>
 
