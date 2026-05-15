@@ -2,20 +2,39 @@
     <header class="appHeader">
         <div class="container appHeader__inner">
             <NuxtLink :to="home" class="appHeader__brand">
-                <span class="appHeader__brandName">{{ t("brand.name") }}</span>
+                <span class="appHeader__brandName">SMVA</span>
             </NuxtLink>
 
-            <nav class="appHeader__nav" aria-label="Primary">
+            <button
+                class="appHeader__toggle"
+                type="button"
+                :aria-expanded="isMenuOpen"
+                aria-controls="primary-navigation"
+                :aria-label="isMenuOpen ? (isEs ? 'Cerrar menu' : 'Close menu') : (isEs ? 'Abrir menu' : 'Open menu')"
+                @click="isMenuOpen = !isMenuOpen"
+            >
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </button>
+
+            <nav
+                id="primary-navigation"
+                class="appHeader__nav"
+                :class="{ 'appHeader__nav--open': isMenuOpen }"
+                aria-label="Primary"
+            >
                 <NuxtLink
                     :to="venues"
                     class="appHeader__link"
+                    @click="closeMenu"
                 >
                     {{ t("nav.venues") }}
                 </NuxtLink>
-                <NuxtLink :to="vendors" class="appHeader__link">
+                <NuxtLink :to="vendors" class="appHeader__link" @click="closeMenu">
                     {{ t("nav.vendors") }}
                 </NuxtLink>
-                <NuxtLink :to="blog" class="appHeader__link">
+                <NuxtLink :to="blog" class="appHeader__link" @click="closeMenu">
                     {{ t("nav.blog") }}
                 </NuxtLink>
 
@@ -23,18 +42,20 @@
                     <NuxtLink
                         :to="switchLocalePath('en')"
                         class="appHeader__langLink"
+                        @click="closeMenu"
                         >EN</NuxtLink
                     >
                     <span class="appHeader__langSep">/</span>
                     <NuxtLink
                         :to="switchLocalePath('es')"
                         class="appHeader__langLink"
+                        @click="closeMenu"
                         >ES</NuxtLink
                     >
 
 
                 </div>
-              <NuxtLink :to="search" class="appHeader__navLink">
+              <NuxtLink :to="search" class="appHeader__navLink" @click="closeMenu">
                 {{ isEs  ? "Buscar" : "Search" }}
               </NuxtLink>
             </nav>
@@ -47,7 +68,12 @@ const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const switchLocalePath = useSwitchLocalePath();
 
+const isMenuOpen = ref(false);
 const isEs = computed(() => locale.value === "es");
+
+function closeMenu() {
+    isMenuOpen.value = false;
+}
 
 const home = computed(() =>
     localePath({ name: "index" })
@@ -83,6 +109,7 @@ const search = computed(() =>
 }
 
 .appHeader__inner {
+    position: relative;
     min-height: 76px;
     display: flex;
     align-items: center;
@@ -112,6 +139,53 @@ const search = computed(() =>
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.appHeader__toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+}
+
+.appHeader__toggle span {
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition:
+        transform 160ms var(--ease),
+        opacity 160ms var(--ease);
+}
+
+.appHeader__toggle span:nth-child(1) {
+    transform: translateY(-6px);
+}
+
+.appHeader__toggle span:nth-child(3) {
+    transform: translateY(6px);
+}
+
+.appHeader__toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: rotate(45deg);
+}
+
+.appHeader__toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.appHeader__toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: rotate(-45deg);
 }
 
 .appHeader__nav {
@@ -176,18 +250,67 @@ const search = computed(() =>
     background: var(--accent-strong);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 820px) {
+    .appHeader {
+        top: 0;
+        padding: var(--s-3);
+    }
+
     .appHeader__inner {
         min-height: auto;
         padding-block: 10px;
-        align-items: flex-start;
+        align-items: center;
         border-radius: 18px;
+        flex-wrap: wrap;
+    }
+
+    .appHeader__brand {
+        flex: 1 1 auto;
+        max-width: calc(100% - 56px);
+    }
+
+    .appHeader__brandName {
+        font-size: 0.96rem;
+    }
+
+    .appHeader__toggle {
+        position: relative;
+        display: inline-flex;
     }
 
     .appHeader__nav {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 10px 12px;
+        display: none;
+        flex: 1 0 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding-top: var(--s-3);
+    }
+
+    .appHeader__nav--open {
+        display: flex;
+    }
+
+    .appHeader__link,
+    .appHeader__navLink {
+        width: 100%;
+        min-height: 44px;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        background: rgba(20, 20, 20, 0.04);
+        color: var(--ink);
+        text-align: center;
+    }
+
+    .appHeader__navLink {
+        background: var(--accent);
+        color: #fff;
+    }
+
+    .appHeader__lang {
+        justify-content: center;
+        width: 100%;
     }
 }
 </style>

@@ -1,16 +1,17 @@
 <template>
   <main class="vendors">
     <section class="vendors__hero">
-      <AdSlot placement="vendors_category_top" />
-      <div class="container">
-        <h1 class="vendors__title">{{ t("nav.vendors") }}</h1>
-        <p class="vendors__subtitle">
-          {{
-            locale === "es"
-                ? "Explora categorías de proveedores para bodas y eventos."
-                : "Browse categories of wedding and event vendors."
-          }}
-        </p>
+      <div class="container vendors__heroInner">
+        <div class="vendors__heroCopy">
+          <h1 class="vendors__title">{{ t("nav.vendors") }}</h1>
+          <p class="vendors__subtitle">
+            {{
+              locale === "es"
+                  ? "Explora categorías de proveedores para bodas y eventos."
+                  : "Browse categories of wedding and event vendors."
+            }}
+          </p>
+        </div>
       </div>
     </section>
 
@@ -44,7 +45,6 @@
 <script setup lang="ts">
 import { VENDOR_CATEGORIES } from "~/data/taxonomies";
 import type { Locale } from "~/types/i18n";
-import AdSlot from "~/components/AdSlot.vue";
 
 const localePath = useLocalePath();
 const { t, locale } = useI18n();
@@ -123,25 +123,97 @@ const categories = computed(() => VENDOR_CATEGORIES);
 }
 
 .vendors__hero {
-    padding: var(--s-9) 0 var(--s-6);
-    text-align: center;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    min-height: clamp(25rem, 54svh, 38rem);
+    padding: clamp(4rem, 7vw, 6.5rem) 0;
+    overflow: hidden;
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(17, 13, 10, 0.72) 0%,
+            rgba(17, 13, 10, 0.54) 38%,
+            rgba(17, 13, 10, 0.22) 70%,
+            rgba(17, 13, 10, 0.08) 100%
+        ),
+        url("/images/vendors-hero-san-miguel.jpg");
+    background-size: cover;
+    background-position: center right;
+    background-repeat: no-repeat;
+}
+
+.vendors__heroInner {
+    width: 100%;
+}
+
+.vendors__heroCopy {
+    max-width: min(44rem, 100%);
+}
+
+.vendors__heroCopy::before {
+    content: "San Miguel de Allende";
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: var(--s-5);
+    padding: 0.48rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.36);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(12px);
+    font-size: 0.94rem;
+    font-weight: 500;
 }
 
 .vendors__title {
     font-size: clamp(2.7rem, 6vw, 4.6rem);
     font-weight: 500;
+    color: #fff;
+    text-wrap: balance;
 }
 
 .vendors__subtitle {
-    margin-top: var(--s-3);
+    margin-top: var(--s-4);
     max-width: 52ch;
-    margin-inline: auto;
+    color: rgba(255, 255, 255, 0.84);
     font-size: 1.08rem;
     line-height: 1.55;
 }
 
 .vendors__section {
-    padding: var(--s-5) 0 var(--s-9);
+    padding: var(--s-8) 0 var(--s-9);
+}
+
+@media (max-width: 760px) {
+    .vendors__hero {
+        min-height: clamp(27rem, 62svh, 34rem);
+        background-image:
+            linear-gradient(
+                180deg,
+                rgba(17, 13, 10, 0.76) 0%,
+                rgba(17, 13, 10, 0.58) 52%,
+                rgba(17, 13, 10, 0.22) 100%
+            ),
+            url("/images/vendors-hero-san-miguel.jpg");
+        background-position: 58% center;
+    }
+}
+
+@media (max-width: 640px) {
+    .vendors__hero {
+        min-height: clamp(24rem, 60svh, 32rem);
+    }
+
+    .vendors__title {
+        font-size: clamp(2.3rem, 12vw, 3.4rem);
+    }
+
+    .vendors__section {
+        padding: var(--s-5) 0 var(--s-8);
+    }
 }
 
 .vendors__grid {
@@ -153,6 +225,16 @@ const categories = computed(() => VENDOR_CATEGORIES);
 @media (max-width: 900px) {
     .vendors__grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .vendors__grid {
+        gap: var(--s-4);
+    }
+
+    .vendors__card {
+        padding: var(--s-5);
     }
 }
 

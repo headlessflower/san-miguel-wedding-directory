@@ -33,8 +33,11 @@
             <div class="container vendor__contentInner">
               <article class="vendor__panel card">
                 <div class="vendor__panelHead">
-                  <span class="badge">
-                    {{ vendor.featured ? t("directory.featured") : categoryLabel }}
+                  <span
+                    class="badge"
+                    :class="vendorTier === 'sponsored' ? 'badge--sponsored' : vendorTier === 'featured' ? 'badge--featured' : ''"
+                  >
+                    {{ vendorBadgeLabel }}
                   </span>
 
                   <span class="vendor__categoryPill">{{ categoryLabel }}</span>
@@ -226,6 +229,7 @@ import { getVendorCategoryBySlug, normalizeSlug } from "~/data/taxonomies";
 import { buildBreadcrumbListJsonLd } from "~/utils/seo/breadcrumbs";
 import AdSlot from "~/components/AdSlot.vue";
 import type { Locale } from "~/types/i18n";
+import { getActiveTier } from "~/utils/monetization/activeTier";
 
 const localePath = useLocalePath();
 
@@ -289,6 +293,27 @@ const gallerySlots = computed(() => {
 
 const categoryLabel = computed(() => {
   return category.value?.label?.[L.value] ?? "";
+});
+
+const vendorTier = computed(() => {
+  if (!vendor.value) return "standard";
+  return getActiveTier(
+    vendor.value.featuredTier ?? (vendor.value.featured ? "featured" : "standard"),
+    vendor.value.promotions,
+    vendor.value.featuredUntil,
+  );
+});
+
+const vendorBadgeLabel = computed(() => {
+  if (vendorTier.value === "sponsored") {
+    return L.value === "es" ? "Patrocinado" : "Sponsored";
+  }
+
+  if (vendorTier.value === "featured") {
+    return t("directory.featured");
+  }
+
+  return categoryLabel.value;
 });
 
 const serviceAreas = computed(() => vendor.value?.serviceAreas?.[L.value] ?? []);
@@ -765,6 +790,69 @@ useHead(() => {
     .vendor__contentInner,
     .vendor__facts {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .vendor {
+        padding-top: var(--s-5);
+    }
+
+    .vendor__gallerySection {
+        padding: var(--s-5) 0 var(--s-6);
+    }
+
+    .detailGallery {
+        grid-template-columns: 1fr;
+        grid-template-rows: clamp(16rem, 68vw, 24rem) 9rem 9rem;
+        gap: var(--s-3);
+    }
+
+    .detailGallery__item {
+        border-radius: var(--radius-sm);
+    }
+
+    .detailGallery__item--topB,
+    .detailGallery__item--bottomB {
+        display: none;
+    }
+
+    .vendor__content {
+        padding-bottom: var(--s-7);
+    }
+
+    .vendor__panelHead,
+    .vendor__priceCard,
+    .vendor__contactName {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .vendor__panel,
+    .vendor__form,
+    .vendor__contact,
+    .vendor__claim {
+        padding: var(--s-5);
+    }
+
+    .vendor__categoryPill,
+    .vendor__area {
+        white-space: normal;
+    }
+
+    .vendor__title {
+        font-size: clamp(2rem, 11vw, 3rem);
+    }
+
+    .vendor__subtitle,
+    .vendor__bodyText,
+    .vendor__sideText,
+    .vendor__claimText {
+        font-size: 1rem;
+    }
+
+    .vendor__priceCard strong {
+        text-align: left;
     }
 }
 </style>

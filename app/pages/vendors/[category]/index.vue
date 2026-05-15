@@ -35,8 +35,16 @@
             <div class="vendorCat__media" aria-hidden="true"></div>
             <div class="vendorCat__body">
               <div class="vendorCat__top">
-                <span v-if="v.featured" class="badge badge--featured">
-                  {{ t("directory.featured") }}
+                <span
+                    v-if="v.displayTier && v.displayTier !== 'standard'"
+                    class="badge"
+                    :class="v.displayTier === 'sponsored' ? 'badge--sponsored' : 'badge--featured'"
+                >
+                  {{
+                    v.displayTier === "sponsored"
+                        ? (L === "es" ? "Patrocinado" : "Sponsored")
+                        : t("directory.featured")
+                  }}
                 </span>
               </div>
 
@@ -82,6 +90,7 @@ import type { Locale } from "~/types/i18n";
 import AdSlot from "~/components/AdSlot.vue";
 import { sortListings } from "~/utils/monetization/sortFeatured";
 import { interleaveSponsored } from "~/utils/monetization/interleaveSponsored";
+import { getActiveTier } from "~/utils/monetization/activeTier";
 
 const localePath = useLocalePath();
 
@@ -197,11 +206,23 @@ const vendorsSorted = computed(() => {
 
 const vendors = computed(() => {
   if (!category.value) return [];
-  return interleaveSponsored(vendorsSorted.value, L.value, {
+  const mixed = interleaveSponsored(vendorsSorted.value, L.value, {
     every: 5,
     startAfter: 2,
     maxSponsored: 6,
   });
+
+  const now = new Date();
+
+  return mixed.map((v: any) => ({
+    ...v,
+    displayTier: getActiveTier(
+        v.featuredTier ?? (v.featured ? "featured" : "standard"),
+        v.promotions,
+        v.featuredUntil,
+        now
+    ),
+  }));
 });
 
 // ---------- SEO meta ----------
@@ -403,11 +424,48 @@ useHead(() => {
     font-weight: 700;
     color: var(--accent-strong);
 }
+.badge--sponsored {
+    background: rgba(202, 137, 95, 0.22);
+    border: 1px solid var(--border);
+    color: rgba(20, 20, 20, 0.82);
+}
 .vendorCat__intro {
     margin-top: var(--s-4);
     max-width: 75ch;
 }
 .vendorCat__introP {
     margin-top: var(--s-3);
+}
+
+@media (max-width: 640px) {
+    .vendorCat__hero {
+        padding: var(--s-7) 0 var(--s-5);
+    }
+
+    .vendorCat__title {
+        font-size: clamp(2.2rem, 12vw, 3.2rem);
+    }
+
+    .vendorCat__section {
+        padding: var(--s-4) 0 var(--s-8);
+    }
+
+    .vendorCat__grid {
+        gap: var(--s-4);
+    }
+
+    .vendorCat__card {
+        padding: var(--s-4);
+    }
+
+    .vendorCat__media {
+        height: clamp(13rem, 58vw, 19rem);
+        border-radius: var(--radius-sm);
+    }
+
+    .vendorCat__top {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
 }
 </style>

@@ -561,4 +561,51 @@ useHead(() => {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 640px) {
+    .venue__gallerySection {
+        padding: var(--s-5) 0 var(--s-6);
+    }
+
+    .detailGallery {
+        grid-template-columns: 1fr;
+        grid-template-rows: clamp(16rem, 68vw, 24rem) 9rem 9rem;
+        gap: var(--s-3);
+    }
+
+    .detailGallery__item {
+        border-radius: var(--radius-sm);
+    }
+
+    .detailGallery__item--topB,
+    .detailGallery__item--bottomB {
+        display: none;
+    }
+
+    .venue__content {
+        padding-bottom: var(--s-7);
+    }
+
+    .venue__panelHead,
+    .venue__priceCard {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .venue__panel,
+    .venue__form,
+    .venue__contact {
+        padding: var(--s-5);
+    }
+
+    .venue__title {
+        font-size: clamp(2rem, 11vw, 3rem);
+    }
+
+    .venue__subtitle,
+    .venue__bodyText,
+    .venue__sideText {
+        font-size: 1rem;
+    }
+}
 </style>

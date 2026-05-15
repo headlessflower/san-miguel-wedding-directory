@@ -253,7 +253,7 @@ const grouped = computed(() => {
   gap: var(--s-4);
 }
 @media (max-width: 900px) {
-  .search__grid { grid-template-columns: 1fr; }
+  .search__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .search__card { display: block; text-decoration: none; }
 .search__cardBody { padding: var(--s-6); }
@@ -266,4 +266,26 @@ const grouped = computed(() => {
 }
 .search__cardTitle { margin-top: var(--s-2); font-size: 1.35rem; font-weight: 500; color: var(--ink); }
 .search__cardText { margin-top: var(--s-2); }
+
+@media (max-width: 640px) {
+  .search__hero {
+    padding: var(--s-7) 0 var(--s-5);
+  }
+
+  .search__title {
+    font-size: clamp(2.2rem, 12vw, 3.2rem);
+  }
+
+  .search__results {
+    padding: var(--s-5) 0 var(--s-8);
+  }
+
+  .search__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search__cardBody {
+    padding: var(--s-5);
+  }
+}
 </style>

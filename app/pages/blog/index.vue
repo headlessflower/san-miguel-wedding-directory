@@ -171,7 +171,7 @@ useSeoMeta({
 }
 @media (max-width: 900px) {
     .blog__grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -203,5 +203,27 @@ useSeoMeta({
     font-size: 13px;
     font-weight: 900;
     color: rgba(20, 20, 20, 0.8);
+}
+
+@media (max-width: 640px) {
+    .blog__hero {
+        padding: var(--s-7) 0 var(--s-5);
+    }
+
+    .blog__title {
+        font-size: clamp(2.2rem, 12vw, 3.2rem);
+    }
+
+    .blog__section {
+        padding: var(--s-4) 0 var(--s-8);
+    }
+
+    .blog__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .blog__card {
+        padding: var(--s-4);
+    }
 }
 </style>

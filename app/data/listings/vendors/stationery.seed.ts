@@ -8,7 +8,7 @@ export const STATIONERY: VendorListing[] = [
         categoryKey: "stationery",
         slug: "amatl-handmade-paper-studio",
         featured: true,
-        featuredTier: "featured",
+        featuredTier: "sponsored",
         isVerified: false,
         isClaimed: false,
 

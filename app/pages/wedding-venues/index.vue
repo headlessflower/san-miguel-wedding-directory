@@ -1,15 +1,17 @@
 <template>
   <main class="venues">
     <section class="venues__hero">
-      <div class="container">
-        <h1 class="venues__title">{{ t("nav.venues") }}</h1>
-        <p class="venues__subtitle">
-          {{
-            locale === "es"
-                ? "Explora lugares para bodas y eventos. "
-                : "Browse wedding and event venues."
-          }}
-        </p>
+      <div class="container venues__heroInner">
+        <div class="venues__heroCopy">
+          <h1 class="venues__title">{{ t("nav.venues") }}</h1>
+          <p class="venues__subtitle">
+            {{
+              locale === "es"
+                  ? "Explora lugares para bodas y eventos."
+                  : "Browse wedding and event venues."
+            }}
+          </p>
+        </div>
       </div>
     </section>
 
@@ -209,25 +211,97 @@ useHead(() => {
 
 <style scoped>
 .venues__hero {
-    padding: var(--s-9) 0 var(--s-6);
-    text-align: center;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    min-height: clamp(25rem, 54svh, 38rem);
+    padding: clamp(4rem, 7vw, 6.5rem) 0;
+    overflow: hidden;
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(17, 13, 10, 0.72) 0%,
+            rgba(17, 13, 10, 0.54) 38%,
+            rgba(17, 13, 10, 0.22) 70%,
+            rgba(17, 13, 10, 0.08) 100%
+        ),
+        url("/images/venues-hero-san-miguel.jpg");
+    background-size: cover;
+    background-position: center right;
+    background-repeat: no-repeat;
+}
+
+.venues__heroInner {
+    width: 100%;
+}
+
+.venues__heroCopy {
+    max-width: min(44rem, 100%);
+}
+
+.venues__heroCopy::before {
+    content: "San Miguel de Allende";
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: var(--s-5);
+    padding: 0.48rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.36);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(12px);
+    font-size: 0.94rem;
+    font-weight: 500;
 }
 
 .venues__title {
     font-size: clamp(2.7rem, 6vw, 4.6rem);
     font-weight: 500;
+    color: #fff;
+    text-wrap: balance;
 }
 
 .venues__subtitle {
-    margin-top: var(--s-3);
+    margin-top: var(--s-4);
     max-width: 52ch;
-    margin-inline: auto;
+    color: rgba(255, 255, 255, 0.84);
     font-size: 1.08rem;
     line-height: 1.55;
 }
 
 .venues__section {
-    padding: var(--s-5) 0 var(--s-9);
+    padding: var(--s-8) 0 var(--s-9);
+}
+
+@media (max-width: 760px) {
+    .venues__hero {
+        min-height: clamp(27rem, 62svh, 34rem);
+        background-image:
+            linear-gradient(
+                180deg,
+                rgba(17, 13, 10, 0.76) 0%,
+                rgba(17, 13, 10, 0.58) 52%,
+                rgba(17, 13, 10, 0.22) 100%
+            ),
+            url("/images/venues-hero-san-miguel.jpg");
+        background-position: 60% center;
+    }
+}
+
+@media (max-width: 640px) {
+    .venues__hero {
+        min-height: clamp(24rem, 60svh, 32rem);
+    }
+
+    .venues__title {
+        font-size: clamp(2.3rem, 12vw, 3.4rem);
+    }
+
+    .venues__section {
+        padding: var(--s-5) 0 var(--s-8);
+    }
 }
 
 .venues__grid {
@@ -239,6 +313,27 @@ useHead(() => {
 @media (max-width: 900px) {
     .venues__grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .venues__grid {
+        gap: var(--s-4);
+    }
+
+    .venues__card {
+        padding: var(--s-4);
+    }
+
+    .venues__media {
+        height: clamp(13rem, 58vw, 19rem);
+        border-radius: var(--radius-sm);
+    }
+
+    .venues__top,
+    .venues__meta {
+        align-items: flex-start;
+        flex-wrap: wrap;
     }
 }
 

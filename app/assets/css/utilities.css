@@ -57,6 +57,12 @@
     background: #fff;
 }
 
+.badge--sponsored {
+    border-color: rgba(202, 137, 95, 0.28);
+    background: rgba(202, 137, 95, 0.22);
+    color: rgba(20, 20, 20, 0.82);
+}
+
 .btn {
     display: inline-flex;
     align-items: center;
@@ -70,6 +76,9 @@
     font-weight: 600;
     letter-spacing: 0;
     box-shadow: var(--shadow-sm);
+    min-width: 0;
+    text-align: center;
+    overflow-wrap: anywhere;
     transition:
         transform 160ms var(--ease),
         box-shadow 160ms var(--ease);
@@ -95,4 +104,19 @@
 
 .card:hover {
     box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding-inline: var(--s-4);
+    }
+
+    .btn {
+        min-height: 44px;
+        padding: 0.82rem 1rem;
+    }
+
+    .card {
+        border-radius: var(--radius-sm);
+    }
 }

@@ -140,4 +140,27 @@ useSeoMeta(() => {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  .newsletterPage__hero {
+    padding: var(--s-7) 0;
+  }
+
+  .newsletterPage h1 {
+    font-size: clamp(2.2rem, 12vw, 3.2rem);
+  }
+
+  .newsletterPage__intro {
+    font-size: 1rem;
+  }
+
+  .newsletterPage__form {
+    padding: var(--s-5);
+    border-radius: var(--radius-sm);
+  }
+
+  .newsletterPage__form button {
+    width: 100%;
+  }
+}
 </style>

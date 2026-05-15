@@ -115,7 +115,7 @@ const venues = computed<VenueCard[]>(() => {
   }));
 
   const chosen = withTier
-      .filter((v: any) => v.displayTier !== "standard" || v.featured)
+      .filter((v: any) => v.displayTier === "featured")
       .slice(0, props.limit ?? 3);
 
   return chosen as VenueCard[];
@@ -163,7 +163,7 @@ const title = computed(() => props.title ?? t("home.featuredVenues"));
 
 @media (max-width: 900px) {
   .feat__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -261,5 +261,40 @@ const title = computed(() => props.title ?? t("home.featuredVenues"));
   background: rgba(202, 137, 95, 0.22);
   border: 1px solid var(--border);
   color: rgba(20, 20, 20, 0.82);
+}
+
+@media (max-width: 640px) {
+  .feat {
+    padding: var(--s-7) 0;
+  }
+
+  .feat__head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+
+  .feat__grid {
+    grid-template-columns: 1fr;
+    gap: var(--s-4);
+  }
+
+  .feat__card {
+    padding: var(--s-4);
+  }
+
+  .feat__media {
+    height: clamp(13rem, 56vw, 18rem);
+    border-radius: var(--radius-sm);
+  }
+
+  .feat__top,
+  .feat__meta {
+    align-items: flex-start;
+  }
+
+  .feat__metaItem {
+    white-space: normal;
+  }
 }
 </style>

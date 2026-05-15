@@ -177,4 +177,24 @@ async function onSubmit() {
 .lead__err {
   font-weight: 800;
 }
+
+@media (max-width: 640px) {
+  .lead {
+    padding: var(--s-5);
+  }
+
+  .lead__input,
+  .lead__textarea {
+    border-radius: var(--radius-xs);
+  }
+
+  .lead__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lead__actions .btn {
+    width: 100%;
+  }
+}
 </style>

@@ -15,16 +15,11 @@
           </NuxtLink>
         </div>
       </div>
-
-      <div class="homeHero__card card">
-        <AdSlot placement="home_hero" />
-      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import AdSlot from "~/components/AdSlot.vue";
 import type { Locale } from "~/types/i18n";
 
 const { t, locale } = useI18n();
@@ -54,24 +49,34 @@ const vendorsTo = computed(() => {
 
 <style scoped>
 .homeHero {
-  padding: clamp(3rem, 7vw, 6.5rem) 0 var(--s-8);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: clamp(34rem, 78svh, 50rem);
+  padding: clamp(4.5rem, 8vw, 7.5rem) 0 clamp(3.5rem, 7vw, 6.5rem);
+  overflow: hidden;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(17, 13, 10, 0.76) 0%,
+      rgba(17, 13, 10, 0.58) 38%,
+      rgba(17, 13, 10, 0.24) 68%,
+      rgba(17, 13, 10, 0.08) 100%
+    ),
+    url("/images/home-hero-san-miguel.jpg");
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
 }
 
 .homeHero__inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: center;
+  width: 100%;
   min-width: 0;
 }
 
-@media (max-width: 900px) {
-  .homeHero__inner {
-    grid-template-columns: 1fr;
-  }
-}
-
 .homeHero__copy {
+  max-width: min(46rem, 100%);
   min-width: 0;
 }
 
@@ -82,10 +87,12 @@ const vendorsTo = computed(() => {
   gap: 0.55rem;
   margin-bottom: var(--s-5);
   padding: 0.48rem 1rem;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.36);
   border-radius: 999px;
-  background: #fff;
-  color: var(--ink);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(12px);
   font-size: 0.94rem;
   font-weight: 500;
 }
@@ -93,21 +100,23 @@ const vendorsTo = computed(() => {
 .homeHero__title {
   max-width: 14ch;
   font-size: clamp(2.8rem, 5.6vw, 4.6rem);
+  color: #fff;
   letter-spacing: 0;
   line-height: 1.05;
+  text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
 @media (max-width: 640px) {
   .homeHero__title {
-    font-size: 2.65rem;
+    font-size: 2.55rem;
   }
 }
 
 .homeHero__subtitle {
   margin-top: var(--s-5);
   max-width: 58ch;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.84);
   font-size: 1.12rem;
   line-height: 1.55;
 }
@@ -119,13 +128,46 @@ const vendorsTo = computed(() => {
   flex-wrap: wrap;
 }
 
-.homeHero__card {
-  padding: var(--s-7);
-  min-width: 0;
-  background:
-    linear-gradient(135deg, rgba(110, 139, 121, 0.16), rgba(180, 87, 55, 0.08)),
-    var(--surface);
-  border-color: rgba(255, 255, 255, 0.72);
-  box-shadow: var(--shadow-lg);
+.homeHero__ctas :deep(.btn:not(.btn--primary)) {
+  border-color: rgba(255, 255, 255, 0.44);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .homeHero {
+    min-height: clamp(38rem, 86svh, 46rem);
+    padding-top: clamp(4rem, 14vw, 6rem);
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(17, 13, 10, 0.78) 0%,
+        rgba(17, 13, 10, 0.62) 48%,
+        rgba(17, 13, 10, 0.28) 100%
+      ),
+      url("/images/home-hero-san-miguel.jpg");
+    background-position: 62% center;
+  }
+
+  .homeHero__subtitle {
+    font-size: 1.04rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .homeHero {
+    min-height: 40rem;
+    background-position: 66% center;
+  }
+
+  .homeHero__ctas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .homeHero__ctas :deep(.btn) {
+    justify-content: center;
+    width: 100%;
+  }
 }
 </style>

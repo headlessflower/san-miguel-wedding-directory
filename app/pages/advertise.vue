@@ -148,7 +148,7 @@ useSeoMeta(() => {
 
 @media (max-width: 900px) {
   .ad__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -229,5 +229,34 @@ useSeoMeta(() => {
   background: rgba(202, 137, 95, 0.22);
   border: 1px solid var(--border);
   color: rgba(20, 20, 20, 0.82);
+}
+
+@media (max-width: 640px) {
+  .ad__hero {
+    padding: var(--s-7) 0 var(--s-5);
+  }
+
+  .ad__title {
+    font-size: clamp(2.2rem, 12vw, 3.2rem);
+    letter-spacing: 0;
+  }
+
+  .ad__section {
+    padding: var(--s-6) 0;
+  }
+
+  .ad__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ad__card {
+    padding: var(--s-5);
+  }
+
+  .ad__cardTop,
+  .ad__price {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 </style>

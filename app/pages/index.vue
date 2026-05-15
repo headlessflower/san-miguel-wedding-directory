@@ -1,6 +1,7 @@
 <template>
   <main class="home">
     <HomeHero />
+    <SponsoredSpotlight />
 
     <FeaturedVenues :limit="3" />
     <FeaturedVendors :limit="3" />
@@ -37,6 +38,7 @@
 <script setup lang="ts">
 import { VENDOR_CATEGORIES } from "~/data/taxonomies";
 import HomeHero from "~/components/home/HomeHero.vue";
+import SponsoredSpotlight from "~/components/home/SponsoredSpotlight.vue";
 import FeaturedVenues from "~/components/home/FeaturedVenues.vue";
 import FeaturedVendors from "~/components/home/FeaturedVendors.vue";
 import type { Locale } from "~/types/i18n";
@@ -339,5 +341,31 @@ function vendorCategoryTo(c: any) {
     align-items: center;
     justify-content: space-between;
     gap: var(--s-4);
+}
+
+@media (max-width: 640px) {
+    .home__section {
+        padding: var(--s-7) 0;
+    }
+
+    .home__sectionHead {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: var(--s-3);
+    }
+
+    .home__grid,
+    .home__cats {
+        gap: var(--s-4);
+    }
+
+    .home__cat {
+        padding: var(--s-5);
+    }
+
+    .home__footerInner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 }
 </style>
