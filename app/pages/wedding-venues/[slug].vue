@@ -7,22 +7,33 @@
         </NuxtLink>
 
         <div class="detailGallery" aria-label="Venue media">
-          <div
+          <button
               v-for="slot in gallerySlots"
               :key="slot.key"
+              type="button"
               class="detailGallery__item"
               :class="`detailGallery__item--${slot.key}`"
+              :disabled="!slot.image"
+              :aria-label="slot.image ? (locale === 'es' ? 'Ampliar imagen' : 'View larger image') : undefined"
+              @click="slot.image && lightbox?.openAt(slot.index)"
           >
-            <img
+            <NuxtImg
                 v-if="slot.image"
                 :src="slot.image.src"
                 :alt="slot.image.alt?.[L] || ''"
                 class="detailGallery__img"
-                loading="lazy"
+                :loading="slot.index === 0 ? 'eager' : 'lazy'"
+                :fetchpriority="slot.index === 0 ? 'high' : 'auto'"
                 decoding="async"
+                width="1200"
+                height="800"
+                sizes="100vw md:50vw lg:40vw"
+                format="webp"
+                @error="useListingImageFallback"
             />
-          </div>
+          </button>
         </div>
+        <ImageLightbox ref="lightbox" :images="displayImages" />
       </div>
     </section>
 
@@ -37,6 +48,20 @@
 
           <h1 class="venue__title">{{ venue.name[L] }}</h1>
           <p class="venue__subtitle">{{ venue.description[L] }}</p>
+          <button
+              class="venue__save btn"
+              :class="{ 'venue__save--active': isSaved(venue.id) }"
+              type="button"
+              :aria-pressed="isSaved(venue.id)"
+              @click="saveVenue"
+          >
+            <span aria-hidden="true">{{ isSaved(venue.id) ? "♥" : "♡" }}</span>
+            {{
+              isSaved(venue.id)
+                  ? (locale === "es" ? "Guardado en lista rápida" : "Saved to quicklist")
+                  : (locale === "es" ? "Guardar en lista rápida" : "Save to quicklist")
+            }}
+          </button>
 
           <div class="venue__facts">
             <span v-if="venue.location?.area" class="venue__fact">
@@ -130,7 +155,13 @@
             >
               {{ t("directory.instagram") }} →
             </a>
-            <p v-if="!venue.website && !venue.instagram" class="venue__muted">
+            <a v-if="venue.email" :href="`mailto:${venue.email}`" class="venue__link">
+              {{ venue.email }}
+            </a>
+            <a v-if="venue.phone" :href="`tel:${venue.phone.replace(/[^+\d]/g, '')}`" class="venue__link">
+              {{ venue.phone }}
+            </a>
+            <p v-if="!venue.website && !venue.instagram && !venue.email && !venue.phone" class="venue__muted">
               {{
                 locale === "es"
                     ? "Los enlaces de contacto se agregarán cuando el perfil sea reclamado."
@@ -157,6 +188,7 @@ const localePath = useLocalePath();
 const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const { getVenueBySlug } = useListings();
+const { initialize, isSaved, toggleVenue } = useQuicklist();
 
 const venue = computed(() => {
   const slug = String(route.params.slug || "");
@@ -169,21 +201,33 @@ const venue = computed(() => {
   return found;
 });
 
+function saveVenue() {
+  toggleVenue({
+    id: venue.value.id,
+    slug: venue.value.slug,
+    name: venue.value.name[L.value],
+    email: venue.value.email,
+    website: venue.value.website,
+  });
+}
+
+onMounted(initialize);
+
 const heroImage = computed(() => {
   const imgs = venue.value.images ?? [];
   return imgs.find((i: any) => i.type === "hero") ?? imgs[0] ?? null;
 });
 
 const displayImages = computed(() => {
-  return (venue.value.images ?? []).filter((image: any) => {
-    return image?.src && !String(image.src).startsWith("/images/");
-  });
+  return (venue.value.images ?? []).filter((image: any) => Boolean(image?.src));
 });
+const lightbox = ref<InstanceType<typeof ImageLightbox> | null>(null);
 
 const gallerySlots = computed(() => {
   const slots = ["hero", "wide", "topA", "topB", "bottomA", "bottomB"];
   return slots.map((key, index) => ({
     key,
+    index,
     image: displayImages.value[index] ?? null,
   }));
 });
@@ -298,6 +342,21 @@ useHead(() => {
     padding-top: var(--s-7);
 }
 
+.venue__save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: var(--s-5);
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent-strong);
+}
+
+.venue__save--active {
+    background: var(--accent);
+    color: white;
+}
+
 .venue__gallerySection {
     padding: var(--s-7) 0 var(--s-8);
 }
@@ -320,11 +379,16 @@ useHead(() => {
 
 .detailGallery__item {
     overflow: hidden;
-    border-radius: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
     background:
         linear-gradient(135deg, rgba(110, 139, 121, 0.18), rgba(216, 199, 173, 0.22)),
         var(--surface-soft);
+    cursor: zoom-in;
 }
+
+.detailGallery__item:disabled { cursor: default; }
 
 .detailGallery__item--hero {
     grid-column: 1;
@@ -360,7 +424,10 @@ useHead(() => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 220ms var(--ease);
 }
+
+.detailGallery__item:not(:disabled):hover .detailGallery__img { transform: scale(1.02); }
 
 .venue__content {
     padding: 0 0 var(--s-9);

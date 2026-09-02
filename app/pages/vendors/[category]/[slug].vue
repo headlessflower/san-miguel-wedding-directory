@@ -10,22 +10,33 @@
                 </NuxtLink>
 
                 <div class="detailGallery" aria-label="Vendor media">
-                    <div
+                    <button
                         v-for="slot in gallerySlots"
                         :key="slot.key"
+                        type="button"
                         class="detailGallery__item"
                         :class="`detailGallery__item--${slot.key}`"
+                        :disabled="!slot.image"
+                        :aria-label="slot.image ? (L === 'es' ? 'Ampliar imagen' : 'View larger image') : undefined"
+                        @click="slot.image && lightbox?.openAt(slot.index)"
                     >
-                        <img
+                        <NuxtImg
                             v-if="slot.image"
                             :src="slot.image.src"
                             :alt="slot.image.alt?.[L] || ''"
                             class="detailGallery__img"
-                            loading="lazy"
+                            :loading="slot.index === 0 ? 'eager' : 'lazy'"
+                            :fetchpriority="slot.index === 0 ? 'high' : 'auto'"
                             decoding="async"
+                            width="1200"
+                            height="800"
+                            sizes="100vw md:50vw lg:40vw"
+                            format="webp"
+                            @error="useListingImageFallback"
                         />
-                    </div>
+                    </button>
                 </div>
+                <ImageLightbox ref="lightbox" :images="displayImages" />
             </div>
         </section>
 
@@ -45,6 +56,10 @@
 
                 <h1 class="vendor__title">{{ vendor.name[L] }}</h1>
                 <p class="vendor__subtitle">{{ vendor.description[L] }}</p>
+                <button class="vendor__save btn" :class="{ 'vendor__save--active': isVendorSaved(vendor.id) }" type="button" :aria-pressed="isVendorSaved(vendor.id)" @click="saveVendor">
+                  <span aria-hidden="true">{{ isVendorSaved(vendor.id) ? "♥" : "♡" }}</span>
+                  {{ isVendorSaved(vendor.id) ? (L === "es" ? "Guardado en lista rápida" : "Saved to quicklist") : (L === "es" ? "Guardar en lista rápida" : "Save to quicklist") }}
+                </button>
 
                 <div class="vendor__facts">
                   <span v-if="primaryLocation" class="vendor__fact">
@@ -240,6 +255,7 @@ const siteUrl = (useRuntimeConfig().public?.siteUrl as string) || "";
 const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const { getVendorByCategoryKeyAndSlug } = useListings();
+const { initialize, isVendorSaved, toggleVendor } = useQuicklist();
 
 // ---------- Path fallbacks (guarantee correct base in es/en) ----------
 function vendorsBase(l: Locale) {
@@ -277,16 +293,23 @@ const resolvedVendor = computed(() => {
 // Expose for template
 const vendor = resolvedVendor;
 
+function saveVendor() {
+  if (!vendor.value || !category.value) return;
+  toggleVendor({ id: vendor.value.id, slug: vendor.value.slug, categorySlug: category.value.slug[L.value], name: vendor.value.name[L.value], email: vendor.value.email, website: vendor.value.website });
+}
+
+onMounted(initialize);
+
 const displayImages = computed(() => {
-  return (vendor.value?.images ?? []).filter((image: any) => {
-    return image?.src && !String(image.src).startsWith("/images/");
-  });
+  return (vendor.value?.images ?? []).filter((image: any) => Boolean(image?.src));
 });
+const lightbox = ref<InstanceType<typeof ImageLightbox> | null>(null);
 
 const gallerySlots = computed(() => {
   const slots = ["hero", "wide", "topA", "topB", "bottomA", "bottomB"];
   return slots.map((key, index) => ({
     key,
+    index,
     image: displayImages.value[index] ?? null,
   }));
 });
@@ -510,11 +533,16 @@ useHead(() => {
 
 .detailGallery__item {
     overflow: hidden;
-    border-radius: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
     background:
         linear-gradient(135deg, rgba(110, 139, 121, 0.18), rgba(216, 199, 173, 0.22)),
         var(--surface-soft);
+    cursor: zoom-in;
 }
+
+.detailGallery__item:disabled { cursor: default; }
 
 .detailGallery__item--hero {
     grid-column: 1;
@@ -550,7 +578,10 @@ useHead(() => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 220ms var(--ease);
 }
+
+.detailGallery__item:not(:disabled):hover .detailGallery__img { transform: scale(1.02); }
 
 .vendor__content {
     padding: 0 0 var(--s-9);
@@ -597,6 +628,9 @@ useHead(() => {
     font-size: clamp(2rem, 4vw, 3.35rem);
     font-weight: 500;
 }
+
+.vendor__save { display:inline-flex;align-items:center;gap:.5rem;margin-top:var(--s-5);border:1px solid var(--accent);background:transparent;color:var(--accent-strong) }
+.vendor__save--active { background:var(--accent);color:#fff }
 
 .vendor__subtitle {
     margin-top: var(--s-4);

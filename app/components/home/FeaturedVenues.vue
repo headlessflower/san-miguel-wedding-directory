@@ -17,7 +17,20 @@
             :to="venueTo(v.slug)"
             class="feat__card card"
         >
-          <div class="feat__media" aria-hidden="true"></div>
+          <div class="feat__media">
+            <NuxtImg
+                v-if="getListingCardImage(v)"
+                :src="getListingCardImage(v)!.src"
+                :alt="getListingCardImage(v)!.alt?.[L] || v.name[L]"
+                loading="lazy"
+                decoding="async"
+                width="800"
+                height="600"
+                sizes="100vw sm:50vw lg:33vw"
+                format="webp"
+                @error="useListingImageFallback"
+            />
+          </div>
 
           <div class="feat__body">
             <div class="feat__top">
@@ -186,10 +199,17 @@ const title = computed(() => props.title ?? t("home.featuredVenues"));
 .feat__media {
   height: 220px;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: var(--radius);
   background:
       linear-gradient(135deg, rgba(110, 139, 121, 0.22), rgba(216, 199, 173, 0.22)),
       var(--surface-soft);
+}
+
+.feat__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .feat__body {
@@ -297,4 +317,23 @@ const title = computed(() => props.title ?? t("home.featuredVenues"));
     white-space: normal;
   }
 }
+</style>
+
+<style scoped>
+.feat { padding: clamp(3.5rem, 7vw, 6.5rem) 0; }
+.feat__head { padding-top: 0.8rem; border-top: 1px solid var(--ink); }
+.feat__title { font-size: clamp(2.35rem, 4.5vw, 4rem); }
+.feat__link { color: var(--ink); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.feat__card { padding: 0; border: 0; background: transparent; }
+.feat__card:hover { transform: none; }
+.feat__media { height: auto; aspect-ratio: 4 / 3; border-radius: 0; }
+.feat__media img { transition: transform 400ms var(--ease); }
+.feat__card:hover .feat__media img { transform: scale(1.015); }
+.feat__body { padding-top: 1rem; }
+.feat__top { min-height: 1rem; }
+.feat__tier { border: 0; border-radius: 0; padding: 0; background: transparent; font-size: 0.66rem; letter-spacing: 0.1em; }
+.feat__name { font-family: var(--font-serif); font-size: clamp(1.65rem, 2.5vw, 2.35rem); font-weight: 400; letter-spacing: -0.025em; }
+.feat__desc { color: var(--muted-strong); font-size: 0.92rem; line-height: 1.5; }
+.feat__meta, .feat__cta { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+@media (max-width: 640px) { .feat__grid { grid-template-columns: 1fr; } }
 </style>

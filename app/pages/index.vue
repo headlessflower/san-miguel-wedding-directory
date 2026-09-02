@@ -5,6 +5,7 @@
 
     <FeaturedVenues :limit="3" />
     <FeaturedVendors :limit="3" />
+    <FeaturedArticle />
 
     <section class="home__section">
       <div class="container">
@@ -41,6 +42,7 @@ import HomeHero from "~/components/home/HomeHero.vue";
 import SponsoredSpotlight from "~/components/home/SponsoredSpotlight.vue";
 import FeaturedVenues from "~/components/home/FeaturedVenues.vue";
 import FeaturedVendors from "~/components/home/FeaturedVendors.vue";
+import FeaturedArticle from "~/components/home/FeaturedArticle.vue";
 import type { Locale } from "~/types/i18n";
 
 const { t, locale } = useI18n();
@@ -368,4 +370,19 @@ function vendorCategoryTo(c: any) {
         flex-direction: column;
     }
 }
+</style>
+
+<style scoped>
+.home { background: var(--bg); }
+.home__section { padding: clamp(3.5rem, 7vw, 6.5rem) 0; }
+.home__sectionHead { padding-top: 0.8rem; border-top: 1px solid var(--ink); }
+.home__sectionTitle { font-size: clamp(2.35rem, 4.5vw, 4rem); }
+.home__sectionLink { color: var(--ink); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.home__cats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
+.home__cat { min-height: 11rem; padding: 1.4rem; border: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); background: transparent; transition: background-color 180ms var(--ease); }
+.home__cat:hover { background: var(--surface); }
+.home__catTitle { font-family: var(--font-serif); font-size: clamp(1.45rem, 2.4vw, 2.15rem); font-weight: 400; }
+.home__catText { margin-top: 3rem; color: var(--accent-strong); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+@media (max-width: 760px) { .home__cats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .home__sectionHead { align-items: flex-end; } .home__cats { grid-template-columns: 1fr; } .home__cat { min-height: 9rem; } }
 </style>

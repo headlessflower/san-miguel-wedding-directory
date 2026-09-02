@@ -1,6 +1,19 @@
 <template>
   <main class="venues">
     <section class="venues__hero">
+      <NuxtImg
+          class="venues__heroImage"
+          src="/images/venues-hero-san-miguel.jpg"
+          alt=""
+          width="1672"
+          height="941"
+          sizes="100vw"
+          format="webp"
+          preload
+          loading="eager"
+          fetchpriority="high"
+          aria-hidden="true"
+      />
       <div class="container venues__heroInner">
         <div class="venues__heroCopy">
           <h1 class="venues__title">{{ t("nav.venues") }}</h1>
@@ -18,14 +31,30 @@
     <section class="venues__section">
       <div class="container">
         <div class="venues__grid">
-          <NuxtLink
+          <article
               v-for="v in venues"
               :key="v.slug"
-              :to="localePath({ name: 'wedding-venues-slug', params: { slug: v.slug } })"
               class="venues__card card"
           >
-            <div class="venues__media" aria-hidden="true"></div>
-            <div class="venues__body">
+            <NuxtLink
+                :to="localePath({ name: 'wedding-venues-slug', params: { slug: v.slug } })"
+                class="venues__cardLink"
+            >
+              <div class="venues__media">
+                <NuxtImg
+                    v-if="getListingCardImage(v)"
+                    :src="getListingCardImage(v)!.src"
+                    :alt="getListingCardImage(v)!.alt?.[L] || v.name[L]"
+                    loading="lazy"
+                    decoding="async"
+                    width="800"
+                    height="600"
+                    sizes="100vw sm:50vw lg:33vw"
+                    format="webp"
+                    @error="useListingImageFallback"
+                />
+              </div>
+              <div class="venues__body">
               <div class="venues__top">
                 <span
                     v-if="v.displayTier && v.displayTier !== 'standard'"
@@ -57,8 +86,19 @@
               </div>
 
               <span class="venues__cta">{{ t("directory.viewDetails") }} →</span>
-            </div>
-          </NuxtLink>
+              </div>
+            </NuxtLink>
+            <button
+                class="venues__save"
+                :class="{ 'venues__save--active': isSaved(v.id) }"
+                type="button"
+                :aria-pressed="isSaved(v.id)"
+                @click="saveVenue(v)"
+            >
+              <span aria-hidden="true">{{ isSaved(v.id) ? "♥" : "♡" }}</span>
+              {{ isSaved(v.id) ? (L === "es" ? "Guardado" : "Saved") : (L === "es" ? "Guardar" : "Save") }}
+            </button>
+          </article>
         </div>
       </div>
     </section>
@@ -82,6 +122,19 @@ const { t, locale } = useI18n();
 const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const { getVenues } = useListings();
+const { initialize, isSaved, toggleVenue } = useQuicklist();
+
+function saveVenue(v: any) {
+  toggleVenue({
+    id: v.id,
+    slug: v.slug,
+    name: v.name[L.value],
+    email: v.email,
+    website: v.website,
+  });
+}
+
+onMounted(initialize);
 
 /** ------- Helpers: localized paths (respects i18n custom routes) ------- */
 const venuesIndexPath = computed(() => {
@@ -218,18 +271,23 @@ useHead(() => {
     min-height: clamp(25rem, 54svh, 38rem);
     padding: clamp(4rem, 7vw, 6.5rem) 0;
     overflow: hidden;
-    background-image:
-        linear-gradient(
+    background-image: linear-gradient(
             90deg,
             rgba(17, 13, 10, 0.72) 0%,
             rgba(17, 13, 10, 0.54) 38%,
             rgba(17, 13, 10, 0.22) 70%,
             rgba(17, 13, 10, 0.08) 100%
-        ),
-        url("/images/venues-hero-san-miguel.jpg");
-    background-size: cover;
-    background-position: center right;
-    background-repeat: no-repeat;
+        );
+}
+
+.venues__heroImage {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
 }
 
 .venues__heroInner {
@@ -278,15 +336,16 @@ useHead(() => {
 @media (max-width: 760px) {
     .venues__hero {
         min-height: clamp(27rem, 62svh, 34rem);
-        background-image:
-            linear-gradient(
+        background-image: linear-gradient(
                 180deg,
                 rgba(17, 13, 10, 0.76) 0%,
                 rgba(17, 13, 10, 0.58) 52%,
                 rgba(17, 13, 10, 0.22) 100%
-            ),
-            url("/images/venues-hero-san-miguel.jpg");
-        background-position: 60% center;
+            );
+    }
+
+    .venues__heroImage {
+        object-position: 60% center;
     }
 }
 
@@ -338,14 +397,44 @@ useHead(() => {
 }
 
 .venues__card {
+    position: relative;
     overflow: hidden;
-    text-decoration: none;
     padding: var(--s-6);
     border-color: rgba(255, 255, 255, 0.7);
     transition:
         transform 180ms var(--ease),
         box-shadow 180ms var(--ease);
 }
+
+.venues__cardLink {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.venues__save {
+    position: absolute;
+    top: calc(var(--s-6) + 0.75rem);
+    right: calc(var(--s-6) + 0.75rem);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.55rem 0.78rem;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(10px);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.venues__save span { color: var(--accent); font-size: 1.05rem; }
+.venues__save--active { background: var(--accent); color: white; }
+.venues__save--active span { color: white; }
 
 .venues__card:hover {
     transform: translateY(-3px);
@@ -354,10 +443,17 @@ useHead(() => {
 .venues__media {
     height: clamp(210px, 26vw, 320px);
     overflow: hidden;
-    border-radius: 20px;
+    border-radius: var(--radius);
     background:
         linear-gradient(135deg, rgba(110, 139, 121, 0.22), rgba(216, 199, 173, 0.22)),
         var(--surface-soft);
+}
+
+.venues__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .venues__body {

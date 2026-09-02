@@ -11,13 +11,26 @@
       </div>
 
       <div class="feat__grid">
-        <NuxtLink
+        <article
             v-for="v in vendors"
             :key="v.id"
-            :to="vendorTo(v)"
             class="feat__card card"
         >
-          <div class="feat__media" aria-hidden="true"></div>
+          <NuxtLink :to="vendorTo(v)" class="feat__cardLink">
+            <div class="feat__media">
+              <NuxtImg
+                  v-if="getListingCardImage(v)"
+                  :src="getListingCardImage(v)!.src"
+                  :alt="getListingCardImage(v)!.alt?.[L] || v.name[L]"
+                  loading="lazy"
+                  decoding="async"
+                  width="800"
+                  height="600"
+                  sizes="100vw sm:50vw lg:33vw"
+                  format="webp"
+                  @error="useListingImageFallback"
+              />
+            </div>
 
           <div class="feat__body">
             <div class="feat__top">
@@ -42,8 +55,13 @@
             <p class="feat__desc">{{ v.description[L] }}</p>
 
             <span class="feat__cta">{{ t("directory.viewDetails") }} →</span>
-          </div>
-        </NuxtLink>
+            </div>
+          </NuxtLink>
+          <button class="feat__save" :class="{ 'feat__save--active': isVendorSaved(v.id) }" type="button" :aria-pressed="isVendorSaved(v.id)" @click="saveVendor(v)">
+            <span aria-hidden="true">{{ isVendorSaved(v.id) ? "♥" : "♡" }}</span>
+            {{ isVendorSaved(v.id) ? (L === "es" ? "Guardado" : "Saved") : (L === "es" ? "Guardar" : "Save") }}
+          </button>
+        </article>
       </div>
     </div>
   </section>
@@ -65,6 +83,13 @@ const localePath = useLocalePath();
 const L = computed<Locale>(() => (locale.value as Locale) || "en");
 
 const { getVendorsByCategoryKey } = useListings();
+const { initialize, isVendorSaved, toggleVendor } = useQuicklist();
+
+function saveVendor(v: VendorCard) {
+  toggleVendor({ id: v.id, slug: v.slug, categorySlug: categorySlug(v.categoryKey), name: v.name[L.value], email: v.email, website: v.website });
+}
+
+onMounted(initialize);
 
 type VendorCard = VendorListing & {
   displayTier?: "standard" | "featured" | "sponsored";
@@ -184,8 +209,8 @@ function categorySlug(key: VendorListing["categoryKey"]) {
 }
 
 .feat__card {
+  position: relative;
   overflow: hidden;
-  text-decoration: none;
   display: block;
   min-width: 0;
   padding: var(--s-5);
@@ -195,6 +220,10 @@ function categorySlug(key: VendorListing["categoryKey"]) {
     box-shadow 180ms var(--ease);
 }
 
+.feat__cardLink { display:block;color:inherit;text-decoration:none }
+.feat__save { position:absolute;top:calc(var(--s-5) + .7rem);right:calc(var(--s-5) + .7rem);display:inline-flex;align-items:center;gap:.42rem;padding:.52rem .72rem;border:1px solid rgba(255,255,255,.72);border-radius:999px;background:rgba(255,255,255,.9);color:var(--ink);backdrop-filter:blur(10px);font:inherit;font-size:.8rem;font-weight:750;cursor:pointer }
+.feat__save span{color:var(--accent)}.feat__save--active{background:var(--accent);color:#fff}.feat__save--active span{color:#fff}
+
 .feat__card:hover {
   transform: translateY(-3px);
 }
@@ -202,10 +231,17 @@ function categorySlug(key: VendorListing["categoryKey"]) {
 .feat__media {
   height: 220px;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: var(--radius);
   background:
       linear-gradient(135deg, rgba(110, 139, 121, 0.2), rgba(216, 199, 173, 0.24)),
       var(--surface-soft);
+}
+
+.feat__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .feat__body {
@@ -282,6 +318,8 @@ function categorySlug(key: VendorListing["categoryKey"]) {
     padding: var(--s-4);
   }
 
+  .feat__save { top:calc(var(--s-4) + .6rem);right:calc(var(--s-4) + .6rem) }
+
   .feat__media {
     height: clamp(13rem, 56vw, 18rem);
     border-radius: var(--radius-sm);
@@ -296,4 +334,23 @@ function categorySlug(key: VendorListing["categoryKey"]) {
     white-space: normal;
   }
 }
+</style>
+
+<style scoped>
+.feat { padding: clamp(3.5rem, 7vw, 6.5rem) 0; background: #ebe4d8; }
+.feat__head { padding-top: 0.8rem; border-top: 1px solid var(--ink); }
+.feat__title { font-size: clamp(2.35rem, 4.5vw, 4rem); }
+.feat__link { color: var(--ink); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.feat__card { padding: 0; border: 0; background: transparent; }
+.feat__card:hover { transform: none; }
+.feat__media { height: auto; aspect-ratio: 1 / 1; border-radius: 0; }
+.feat__media img { transition: transform 400ms var(--ease); }
+.feat__card:hover .feat__media img { transform: scale(1.015); }
+.feat__body { padding-top: 1rem; }
+.feat__pill { border: 0; border-radius: 0; padding: 0; background: transparent; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.feat__name { font-family: var(--font-serif); font-size: clamp(1.55rem, 2.3vw, 2.15rem); font-weight: 400; letter-spacing: -0.025em; }
+.feat__desc { color: var(--muted-strong); font-size: 0.92rem; line-height: 1.5; }
+.feat__cta { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.feat__save { border-radius: 0; box-shadow: none; }
+@media (max-width: 640px) { .feat__grid { grid-template-columns: 1fr; } }
 </style>

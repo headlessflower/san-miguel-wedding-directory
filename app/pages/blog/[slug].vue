@@ -21,7 +21,17 @@
                 </div>
 
                 <figure class="post__heroMedia">
-                    <img :src="heroImage" :alt="heroImageAlt" />
+                    <NuxtImg
+                        :src="heroImage"
+                        :alt="heroImageAlt"
+                        width="1200"
+                        height="675"
+                        sizes="100vw lg:50vw"
+                        format="webp"
+                        preload
+                        loading="eager"
+                        fetchpriority="high"
+                    />
                 </figure>
             </div>
         </section>
@@ -38,7 +48,16 @@
                         :key="image.src"
                         class="post__railFigure"
                     >
-                        <img :src="image.src" :alt="image.alt" />
+                        <NuxtImg
+                            :src="image.src"
+                            :alt="image.alt"
+                            width="800"
+                            height="600"
+                            sizes="100vw lg:360px"
+                            format="webp"
+                            loading="lazy"
+                            decoding="async"
+                        />
                         <figcaption>{{ image.caption }}</figcaption>
                     </figure>
                 </aside>

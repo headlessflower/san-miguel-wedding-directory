@@ -2,7 +2,8 @@
     <header class="appHeader">
         <div class="container appHeader__inner">
             <NuxtLink :to="home" class="appHeader__brand">
-                <span class="appHeader__brandName">SMVA</span>
+                <span class="appHeader__brandKicker">The San Miguel edit</span>
+                <span class="appHeader__brandName">San Miguel Wedding Venues</span>
             </NuxtLink>
 
             <button
@@ -36,6 +37,9 @@
                 </NuxtLink>
                 <NuxtLink :to="blog" class="appHeader__link" @click="closeMenu">
                     {{ t("nav.blog") }}
+                </NuxtLink>
+                <NuxtLink :to="about" class="appHeader__link" @click="closeMenu">
+                    {{ isEs ? "Por qué SMWC" : "Why SMWC" }}
                 </NuxtLink>
 
                 <div class="appHeader__lang">
@@ -91,6 +95,10 @@ const blog = computed(() =>
     localePath({ name: "blog" })
 );
 
+const about = computed(() =>
+    localePath({ name: "about" })
+);
+
 const search = computed(() =>
     localePath({ name: "search" })
 );
@@ -117,7 +125,7 @@ const search = computed(() =>
     gap: var(--s-4);
     min-width: 0;
     border: 1px solid rgba(255, 255, 255, 0.75);
-    border-radius: 22px;
+    border-radius: var(--radius);
     background: rgba(255, 255, 255, 0.88);
     box-shadow: var(--shadow-sm);
     padding-inline: clamp(1rem, 3vw, 2rem);
@@ -260,7 +268,7 @@ const search = computed(() =>
         min-height: auto;
         padding-block: 10px;
         align-items: center;
-        border-radius: 18px;
+        border-radius: var(--radius);
         flex-wrap: wrap;
     }
 
@@ -312,5 +320,27 @@ const search = computed(() =>
         justify-content: center;
         width: 100%;
     }
+}
+</style>
+
+<style scoped>
+.appHeader { top: 0; padding: 0; background: #fff; backdrop-filter: none; border-bottom: 1px solid var(--ink); }
+.appHeader__inner { min-height: 98px; border: 0; border-radius: 0; background: #fff; box-shadow: none; padding-block: 0.9rem; }
+.appHeader__brand { flex-direction: column; align-items: flex-start; gap: 0.1rem; }
+.appHeader__brandKicker { color: var(--accent-strong); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.appHeader__brandName { font-family: var(--font-serif); font-size: clamp(1.35rem, 2.2vw, 2.05rem); font-weight: 400; letter-spacing: -0.035em; }
+.appHeader__nav { align-self: stretch; }
+.appHeader__link { display: flex; align-items: center; height: 100%; color: var(--ink); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+.appHeader__link:hover { color: var(--accent-strong); }
+.appHeader__lang { gap: 4px; border: 0; border-left: 1px solid var(--border); border-radius: 0; padding-left: 1rem; }
+.appHeader__navLink { min-height: 36px; padding: 0 0 0 1rem; border-radius: 0; background: transparent; color: var(--ink); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+.appHeader__navLink:hover { background: transparent; color: var(--accent-strong); }
+.appHeader__toggle { border-radius: 0; box-shadow: none; }
+@media (max-width: 820px) {
+  .appHeader__inner { min-height: 80px; }
+  .appHeader__nav { top: calc(100% + 1px); border: 0; border-radius: 0; box-shadow: none; }
+  .appHeader__link { min-height: 48px; border-bottom: 1px solid var(--border); }
+  .appHeader__lang { border-left: 0; padding-left: 0; }
+  .appHeader__navLink { justify-content: flex-start; padding-left: 0; }
 }
 </style>

@@ -26,41 +26,27 @@
 .badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.48rem 0.95rem;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--surface);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     box-shadow: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    letter-spacing: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     color: var(--ink);
 }
 
 .badge::before,
-.badge::after {
-    content: "";
-    width: 1.05rem;
-    height: 0.55rem;
-    border-top: 2px solid rgba(110, 139, 121, 0.48);
-    border-radius: 999px 999px 0 0;
-    transform: rotate(22deg);
-}
-
-.badge::after {
-    transform: rotate(-22deg);
-}
+.badge::after { display: none; }
 
 .badge--featured {
-    border-color: rgba(180, 87, 55, 0.16);
-    background: #fff;
+    color: var(--accent-strong);
 }
 
 .badge--sponsored {
-    border-color: rgba(202, 137, 95, 0.28);
-    background: rgba(202, 137, 95, 0.22);
-    color: rgba(20, 20, 20, 0.82);
+    color: var(--accent-strong);
 }
 
 .btn {
@@ -68,25 +54,26 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.9rem 1.25rem;
+    padding: 0.9rem 1.35rem;
     border-radius: var(--radius-xs);
     border: 1px solid var(--border);
     background: var(--surface);
     color: var(--ink);
-    font-weight: 600;
-    letter-spacing: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     box-shadow: var(--shadow-sm);
     min-width: 0;
     text-align: center;
     overflow-wrap: anywhere;
     transition:
-        transform 160ms var(--ease),
-        box-shadow 160ms var(--ease);
+        background-color 160ms var(--ease), color 160ms var(--ease);
 }
 
 .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    background: var(--ink);
+    color: #fff;
 }
 
 .btn--primary {
@@ -96,15 +83,14 @@
 }
 
 .card {
-    border: 1px solid var(--border);
+    border: 0;
+    border-top: 1px solid var(--border);
     background: var(--surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
 }
 
-.card:hover {
-    box-shadow: var(--shadow-md);
-}
+.card:hover { box-shadow: none; }
 
 @media (max-width: 640px) {
     .container {

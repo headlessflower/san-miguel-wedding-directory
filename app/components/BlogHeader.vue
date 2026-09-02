@@ -86,6 +86,22 @@ const BLOG_SLUG_TRANSLATIONS: Record<string, { en: string; es: string }> = {
         en: "best-wedding-venues-sma-2026",
         es: "mejores-lugares-para-boda-sma-2026",
     },
+    "san-miguel-wedding-weather-by-season": {
+        en: "san-miguel-wedding-weather-by-season",
+        es: "clima-para-boda-san-miguel-por-temporada",
+    },
+    "clima-para-boda-san-miguel-por-temporada": {
+        en: "san-miguel-wedding-weather-by-season",
+        es: "clima-para-boda-san-miguel-por-temporada",
+    },
+    "rosewood-san-miguel-destination-wedding-review": {
+        en: "rosewood-san-miguel-destination-wedding-review",
+        es: "resena-boda-destino-rosewood-san-miguel",
+    },
+    "resena-boda-destino-rosewood-san-miguel": {
+        en: "rosewood-san-miguel-destination-wedding-review",
+        es: "resena-boda-destino-rosewood-san-miguel",
+    },
 };
 
 const isMenuOpen = ref(false);

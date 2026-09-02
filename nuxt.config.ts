@@ -10,20 +10,28 @@ function stripExt(name: string) {
   return name.replace(/\.(md|mdx)$/i, "");
 }
 
-const gtagId = process.env.NUXT_PUBLIC_GTAG_ID;
+const gtagId = process.env.NUXT_PUBLIC_GTAG_ID || "G-3M64D0STY7";
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
 
   devtools: { enabled: true },
 
-  css: ["~/assets/css/tokens.css", "~/assets/css/main.css", "~/assets/css/base.css", "~/assets/css/utilities.css", ],
+  css: ["~/assets/css/tokens.css", "~/assets/css/main.css", "~/assets/css/base.css", "~/assets/css/utilities.css", "~/assets/css/editorial.css"],
 
-  modules: ["@nuxtjs/i18n", "@nuxtjs/seo", "@nuxtjs/sitemap", "@nuxt/content", "nuxt-gtag"],
+  modules: ["@nuxt/image", "@nuxtjs/i18n", "@nuxtjs/seo", "@nuxtjs/sitemap", "@nuxt/content", "nuxt-gtag"],
+
+  image: {
+    // Static deploys currently do not publish generated /_ipx assets. Keep
+    // NuxtImg's sizing/loading behavior while serving source files directly.
+    provider: "none",
+    format: ["webp"],
+    quality: 80,
+  },
 
   gtag: {
-    id: gtagId || "G-XXXXXXXXXX",
-    enabled: Boolean(gtagId),
+    id: gtagId,
+    enabled: true,
   },
 
   // Swap once your domain is final
@@ -131,6 +139,7 @@ export default defineNuxtConfig({
         { en: "/advertise", es: "/publicidad" },
         { en: "/advertise-with-us", es: "/anunciate-con-nosotros" },
         { en: "/faq", es: "/preguntas-frecuentes" },
+        { en: "/about", es: "/acerca" },
         { en: "/newsletter", es: "/newsletter" },
       ];
       for (const p of staticPaths) {
@@ -179,6 +188,13 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: "en" },
       meta: [{ name: "theme-color", content: "#f2f2f0" }],
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+      script: [
+        {
+          async: true,
+          src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4237793976332563",
+          crossorigin: "anonymous",
+        },
+      ],
     },
   },
   content: {},

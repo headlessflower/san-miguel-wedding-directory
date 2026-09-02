@@ -1,6 +1,19 @@
 <template>
   <main class="vendors">
     <section class="vendors__hero">
+      <NuxtImg
+          class="vendors__heroImage"
+          src="/images/vendors-hero-san-miguel.jpg"
+          alt=""
+          width="1672"
+          height="941"
+          sizes="100vw"
+          format="webp"
+          preload
+          loading="eager"
+          fetchpriority="high"
+          aria-hidden="true"
+      />
       <div class="container vendors__heroInner">
         <div class="vendors__heroCopy">
           <h1 class="vendors__title">{{ t("nav.vendors") }}</h1>
@@ -130,18 +143,23 @@ const categories = computed(() => VENDOR_CATEGORIES);
     min-height: clamp(25rem, 54svh, 38rem);
     padding: clamp(4rem, 7vw, 6.5rem) 0;
     overflow: hidden;
-    background-image:
-        linear-gradient(
+    background-image: linear-gradient(
             90deg,
             rgba(17, 13, 10, 0.72) 0%,
             rgba(17, 13, 10, 0.54) 38%,
             rgba(17, 13, 10, 0.22) 70%,
             rgba(17, 13, 10, 0.08) 100%
-        ),
-        url("/images/vendors-hero-san-miguel.jpg");
-    background-size: cover;
-    background-position: center right;
-    background-repeat: no-repeat;
+        );
+}
+
+.vendors__heroImage {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
 }
 
 .vendors__heroInner {
@@ -190,15 +208,16 @@ const categories = computed(() => VENDOR_CATEGORIES);
 @media (max-width: 760px) {
     .vendors__hero {
         min-height: clamp(27rem, 62svh, 34rem);
-        background-image:
-            linear-gradient(
+        background-image: linear-gradient(
                 180deg,
                 rgba(17, 13, 10, 0.76) 0%,
                 rgba(17, 13, 10, 0.58) 52%,
                 rgba(17, 13, 10, 0.22) 100%
-            ),
-            url("/images/vendors-hero-san-miguel.jpg");
-        background-position: 58% center;
+            );
+    }
+
+    .vendors__heroImage {
+        object-position: 58% center;
     }
 }
 

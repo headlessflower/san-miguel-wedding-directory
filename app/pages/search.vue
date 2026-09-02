@@ -237,7 +237,7 @@ const grouped = computed(() => {
   width: min(740px, 100%);
   font-size: 16px;
   padding: 16px 18px;
-  border-radius: 16px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
   box-shadow: var(--shadow-sm);

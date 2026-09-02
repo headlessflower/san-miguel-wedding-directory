@@ -26,14 +26,27 @@
         </div>
 
         <div class="vendorCat__grid">
-          <NuxtLink
+          <article
               v-for="v in vendors"
               :key="v.slug"
-              :to="vendorTo(v.slug)"
               class="vendorCat__card card"
           >
-            <div class="vendorCat__media" aria-hidden="true"></div>
-            <div class="vendorCat__body">
+            <NuxtLink :to="vendorTo(v.slug)" class="vendorCat__cardLink">
+              <div class="vendorCat__media">
+                <NuxtImg
+                    v-if="getListingCardImage(v)"
+                    :src="getListingCardImage(v)!.src"
+                    :alt="getListingCardImage(v)!.alt?.[L] || v.name[L]"
+                    loading="lazy"
+                    decoding="async"
+                    width="800"
+                    height="600"
+                    sizes="100vw sm:50vw lg:33vw"
+                    format="webp"
+                    @error="useListingImageFallback"
+                />
+              </div>
+              <div class="vendorCat__body">
               <div class="vendorCat__top">
                 <span
                     v-if="v.displayTier && v.displayTier !== 'standard'"
@@ -53,8 +66,13 @@
               <span class="vendorCat__cta">
                 {{ t("directory.viewDetails") }} →
               </span>
-            </div>
-          </NuxtLink>
+              </div>
+            </NuxtLink>
+            <button class="vendorCat__save" :class="{ 'vendorCat__save--active': isVendorSaved(v.id) }" type="button" :aria-pressed="isVendorSaved(v.id)" @click="saveVendor(v)">
+              <span aria-hidden="true">{{ isVendorSaved(v.id) ? "♥" : "♡" }}</span>
+              {{ isVendorSaved(v.id) ? (L === "es" ? "Guardado" : "Saved") : (L === "es" ? "Guardar" : "Save") }}
+            </button>
+          </article>
         </div>
 
         <CategoryFaq
@@ -104,6 +122,14 @@ const L = computed<Locale>(() => (locale.value as Locale) || "en");
 const categoryParam = computed(() => String(route.params.category || ""));
 
 const { getVendorsByCategoryKey } = useListings();
+const { initialize, isVendorSaved, toggleVendor } = useQuicklist();
+
+function saveVendor(v: any) {
+  if (!category.value) return;
+  toggleVendor({ id: v.id, slug: v.slug, categorySlug: category.value.slug[L.value], name: v.name[L.value], email: v.email, website: v.website });
+}
+
+onMounted(initialize);
 
 // ---------- Path fallbacks (guarantee correct base in es/en) ----------
 function vendorsBase(l: Locale) {
@@ -374,14 +400,18 @@ useHead(() => {
 }
 
 .vendorCat__card {
+    position: relative;
     overflow: hidden;
-    text-decoration: none;
     padding: var(--s-6);
     border-color: rgba(255, 255, 255, 0.7);
     transition:
         transform 180ms var(--ease),
         box-shadow 180ms var(--ease);
 }
+
+.vendorCat__cardLink { display: block; color: inherit; text-decoration: none; }
+.vendorCat__save { position:absolute;top:calc(var(--s-6) + .75rem);right:calc(var(--s-6) + .75rem);display:inline-flex;align-items:center;gap:.42rem;padding:.55rem .78rem;border:1px solid rgba(255,255,255,.72);border-radius:999px;background:rgba(255,255,255,.9);color:var(--ink);box-shadow:var(--shadow-sm);backdrop-filter:blur(10px);font:inherit;font-size:.82rem;font-weight:750;cursor:pointer }
+.vendorCat__save span { color:var(--accent);font-size:1.05rem }.vendorCat__save--active{background:var(--accent);color:#fff}.vendorCat__save--active span{color:#fff}
 
 .vendorCat__card:hover {
     transform: translateY(-3px);
@@ -390,10 +420,17 @@ useHead(() => {
 .vendorCat__media {
     height: clamp(210px, 26vw, 320px);
     overflow: hidden;
-    border-radius: 20px;
+    border-radius: var(--radius);
     background:
         linear-gradient(135deg, rgba(110, 139, 121, 0.22), rgba(216, 199, 173, 0.22)),
         var(--surface-soft);
+}
+
+.vendorCat__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .vendorCat__body {
@@ -457,6 +494,8 @@ useHead(() => {
     .vendorCat__card {
         padding: var(--s-4);
     }
+
+    .vendorCat__save { top:calc(var(--s-4) + .65rem);right:calc(var(--s-4) + .65rem) }
 
     .vendorCat__media {
         height: clamp(13rem, 58vw, 19rem);

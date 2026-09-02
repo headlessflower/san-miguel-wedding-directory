@@ -1,0 +1,315 @@
+/* Editorial system shared by all non-homepage routes. */
+
+:where(input, textarea, select) {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:where(.venues__heroCopy, .vendors__heroCopy)::before {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+}
+
+:where(.venues__hero, .vendors__hero) {
+  min-height: clamp(29rem, 58svh, 42rem) !important;
+}
+
+:where(.venues__title, .vendors__title) {
+  max-width: 12ch;
+  font-family: var(--font-serif) !important;
+  font-size: clamp(3.5rem, 7vw, 6.5rem) !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 0.92 !important;
+}
+
+:where(.venues__subtitle, .vendors__subtitle) {
+  max-width: 43ch !important;
+  font-size: 1rem !important;
+}
+
+:where(.venues__section, .vendors__section, .vendorCat__section, .blog__section, .search__results) {
+  padding-block: clamp(3.5rem, 7vw, 6.5rem) !important;
+}
+
+:where(.venues__grid, .vendorCat__grid, .search__grid, .blog__grid) {
+  gap: clamp(1.5rem, 3vw, 2.5rem) !important;
+}
+
+:where(.venues__card, .vendorCat__card, .search__card, .blog__card) {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:where(.venues__media, .vendorCat__media) {
+  height: auto !important;
+  aspect-ratio: 4 / 3;
+  border-radius: 0 !important;
+}
+
+:where(.venues__media img, .vendorCat__media img) {
+  transition: transform 400ms var(--ease);
+}
+
+:where(.venues__card, .vendorCat__card):hover :where(.venues__media img, .vendorCat__media img) {
+  transform: scale(1.015);
+}
+
+:where(.venues__body, .vendorCat__body) {
+  padding: 1rem 0 0 !important;
+}
+
+:where(.venues__name, .vendorCat__name, .search__cardTitle, .blog__cardTitle) {
+  font-family: var(--font-serif) !important;
+  font-size: clamp(1.55rem, 2.5vw, 2.25rem) !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.02 !important;
+}
+
+:where(.venues__desc, .vendorCat__desc, .search__cardText, .blog__cardDesc) {
+  color: var(--muted-strong) !important;
+  font-size: 0.92rem !important;
+  line-height: 1.5 !important;
+}
+
+:where(.venues__meta, .venues__cta, .vendorCat__cta, .search__kicker, .blog__meta, .blog__cta) {
+  font-size: 0.67rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+:where(.venues__save, .vendorCat__save) {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.vendors__grid {
+  gap: 0 !important;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+
+.vendors__card {
+  min-height: 14rem;
+  padding: 1.5rem !important;
+  border: 0 !important;
+  border-right: 1px solid var(--border) !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.vendors__card:hover { background: var(--surface) !important; transform: none !important; }
+.vendors__cardTitle { font-size: clamp(1.65rem, 2.8vw, 2.5rem) !important; }
+.vendors__cardText { margin-top: 3.5rem !important; }
+.vendors__cardCta { font-size: 0.68rem !important; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.vendorCat__hero {
+  padding: clamp(4rem, 8vw, 7rem) 0 clamp(2.5rem, 5vw, 4rem) !important;
+  border-bottom: 1px solid var(--ink);
+  background: #ebe4d8 !important;
+}
+
+.vendorCat__back,
+:where(.venue__back, .vendor__back, .post__back) {
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+.vendorCat__title {
+  max-width: 14ch;
+  margin-top: 1rem !important;
+  font-size: clamp(3rem, 6vw, 5.8rem) !important;
+  line-height: 0.95 !important;
+}
+
+.vendorCat__intro { max-width: 48rem !important; margin-bottom: 3.5rem !important; }
+
+:where(.venue__gallerySection, .vendor__gallerySection) {
+  padding: clamp(2rem, 4vw, 3.5rem) 0 0 !important;
+  background: #ebe4d8 !important;
+}
+
+:where(.detailGallery, .detailGallery__item, .detailGallery__img) {
+  border-radius: 0 !important;
+}
+
+:where(.venue__content, .vendor__content) {
+  padding-block: clamp(3rem, 6vw, 6rem) !important;
+}
+
+:where(.venue__panel, .vendor__panel) {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:where(.venue__title, .vendor__title) {
+  max-width: 14ch;
+  font-size: clamp(3rem, 6vw, 5.8rem) !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 0.94 !important;
+}
+
+:where(.venue__subtitle, .vendor__subtitle) {
+  max-width: 50ch !important;
+  color: var(--muted-strong) !important;
+  font-size: 1.05rem !important;
+}
+
+:where(.venue__facts, .vendor__facts) {
+  margin-top: 2.5rem !important;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+
+:where(.venue__fact, .vendor__fact) {
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+:where(.venue__sectionTitle, .vendor__sectionTitle, .venue__sideTitle, .vendor__sideTitle) {
+  font-family: var(--font-sans) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.11em !important;
+  text-transform: uppercase !important;
+}
+
+:where(.venue__amenity, .vendor__area, .vendor__categoryPill) {
+  border-radius: 0 !important;
+}
+
+:where(.venue__priceCard, .vendor__priceCard, .venue__form, .vendor__form, .venue__contact, .vendor__contact, .vendor__claim) {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:where(.venue__form, .vendor__form, .venue__contact, .vendor__contact, .vendor__claim) {
+  border-top: 1px solid var(--ink) !important;
+}
+
+.blogHeader {
+  top: 0 !important;
+  background: #fff !important;
+  backdrop-filter: none !important;
+  border-bottom: 1px solid var(--ink) !important;
+}
+
+.blogHeader__inner { min-height: 82px !important; }
+.blogHeader__brandName { font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.8rem) !important; font-weight: 400 !important; letter-spacing: -0.03em !important; text-transform: none !important; }
+.blogHeader__link { font-size: 0.7rem !important; font-weight: 700 !important; letter-spacing: 0.08em !important; text-transform: uppercase; }
+:where(.blogHeader__toggle, .blogHeader__lang, .blogHeader__nav) { border-radius: 0 !important; box-shadow: none !important; }
+
+.blog__masthead { margin-bottom: clamp(2.5rem, 5vw, 4.5rem); padding-bottom: 1rem; border-bottom: 1px solid var(--ink); }
+.blog__masthead p { margin-bottom: 0.7rem; color: var(--accent-strong); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.blog__masthead h1 { font-size: clamp(3rem, 6vw, 5.5rem); line-height: 0.95; }
+
+.blog__grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+.blog__card { padding-bottom: 2rem !important; border-bottom: 1px solid var(--border) !important; }
+.blog__cardTitle { margin-top: 0.8rem !important; font-size: clamp(2rem, 4vw, 3.5rem) !important; }
+.blog__cta { color: var(--accent-strong) !important; }
+
+.post__hero {
+  padding: clamp(4rem, 8vw, 7rem) 0 !important;
+  background: #ebe4d8 !important;
+}
+
+.post__meta { font-size: 0.68rem !important; letter-spacing: 0.11em !important; text-transform: uppercase; }
+.post__title { max-width: 15ch !important; font-size: clamp(3.4rem, 7vw, 7rem) !important; line-height: 0.92 !important; letter-spacing: -0.045em !important; }
+.post__subtitle { max-width: 52ch !important; font-size: clamp(1.05rem, 1.6vw, 1.25rem) !important; }
+.post__tag { border-radius: 0 !important; background: transparent !important; border-bottom: 1px solid var(--border); }
+.post__heroMedia { border-radius: 0 !important; box-shadow: none !important; }
+.post__content { padding-block: clamp(3rem, 6vw, 6rem) !important; }
+.post__contentInner { max-width: 46rem; }
+.post__contentInner :where(h2, h3) { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.025em; }
+.post__contentInner h2 { font-size: clamp(2rem, 4vw, 3.25rem); }
+.post__contentInner p { color: #393630; font-size: 1.08rem; line-height: 1.75; }
+
+:where(.related, .catFaq) { border-radius: 0 !important; box-shadow: none !important; }
+.related { border-top: 1px solid var(--ink) !important; }
+.catFaq__item { border-radius: 0 !important; }
+
+:where(.search__hero, .faqPage__hero, .newsletterPage__hero, .salesPage__hero, .ad__hero) {
+  padding-block: clamp(4rem, 8vw, 7rem) !important;
+  border-bottom: 1px solid var(--ink);
+  background: #ebe4d8 !important;
+}
+
+:where(.search__title, .faqPage__hero h1, .newsletterPage__hero h1, .salesPage__hero h1, .ad__title) {
+  max-width: 15ch;
+  font-size: clamp(3.2rem, 6.5vw, 6rem) !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 0.94 !important;
+}
+
+:where(.search__subtitle, .faqPage__intro, .newsletterPage__intro, .salesPage__intro, .ad__subtitle) {
+  max-width: 52ch !important;
+  color: var(--muted-strong) !important;
+}
+
+.search__form { max-width: 52rem !important; margin-top: 2rem !important; }
+.search__input { min-height: 3.5rem; border: 1px solid var(--ink) !important; background: #fff !important; }
+.search__groupTitle { padding-bottom: 0.7rem; border-bottom: 1px solid var(--ink); font-size: clamp(2rem, 4vw, 3.25rem) !important; }
+.search__card { padding-block: 1.25rem !important; border-top: 1px solid var(--border) !important; }
+
+:where(.faqPage__section, .newsletterPage__hero + *, .salesPage__section, .ad__section) {
+  padding-block: clamp(3.5rem, 7vw, 6.5rem) !important;
+}
+
+.faqPage__item { border-radius: 0 !important; border-top: 1px solid var(--border) !important; }
+.newsletterPage__form { border-radius: 0 !important; box-shadow: none !important; border-top: 1px solid var(--ink) !important; }
+.salesPage__proof, .salesPage__reason, .salesPage__cta, .ad__card, .ad__lead { border-radius: 0 !important; box-shadow: none !important; }
+.salesPage__reason, .ad__card { border-top: 1px solid var(--ink) !important; }
+.ad__rec { border-radius: 0 !important; }
+
+.whyPage__hero { background: #ebe4d8 !important; }
+.whyPage__hero h1, .whyPage__sectionHead h2, .whyPage__stepsCopy h2, .whyPage__ctaPanel h2 { font-size: clamp(3rem, 6vw, 5.8rem) !important; line-height: 0.95 !important; }
+.whyPage__eyebrow, .salesPage__kicker, .newsletterPage__kicker, .faqPage__kicker { font-size: 0.68rem !important; font-weight: 700 !important; letter-spacing: 0.12em !important; text-transform: uppercase; }
+.whyPage__preview { border-radius: 0 !important; box-shadow: none !important; transform: none !important; }
+.whyPage__featureGrid, .whyPage__compareCard, .whyPage__ctaPanel { border-radius: 0 !important; }
+.whyPage__featureIcon, .whyPage__stepList li > span { border-radius: 0 !important; }
+.whyPage__button { border-radius: 0 !important; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.lead, .lead__input, .lead__textarea { border-radius: 0 !important; box-shadow: none !important; }
+
+.quicklist__trigger, .quicklist__trigger b, .quicklist__panel, .quicklist__sectionHead span,
+.quicklist__empty, .quicklist__list li, .quicklist__add input, .quicklist__add button,
+.quicklist__footer > button { border-radius: 0 !important; }
+.quicklist__trigger, .quicklist__panel { box-shadow: none !important; backdrop-filter: none !important; }
+.quicklist__panel { border-color: var(--ink) !important; }
+
+@media (max-width: 900px) {
+  .blog__grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 760px) {
+  :where(.venues__hero, .vendors__hero) { min-height: 31rem !important; }
+  :where(.venues__title, .vendors__title) { font-size: clamp(3rem, 14vw, 4.6rem) !important; }
+  .vendors__grid { grid-template-columns: 1fr !important; }
+  :where(.venue__contentInner, .vendor__contentInner) { grid-template-columns: 1fr !important; }
+}

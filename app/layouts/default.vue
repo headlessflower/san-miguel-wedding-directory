@@ -64,11 +64,17 @@ useHead(() => {
             <slot />
         </main>
         <AppFooter />
+        <QuicklistDrawer />
     </div>
 </template>
 
 <style scoped>
 .layout__main {
     min-width: 0;
+}
+
+.layout--default {
+    min-height: 100vh;
+    background: var(--bg);
 }
 </style>

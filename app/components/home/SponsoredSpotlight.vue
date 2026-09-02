@@ -2,7 +2,20 @@
   <section v-if="sponsoredVendor" class="sponsored">
     <div class="container">
       <NuxtLink :to="vendorTo(sponsoredVendor)" class="sponsored__card">
-        <div class="sponsored__media" aria-hidden="true"></div>
+        <div class="sponsored__media">
+          <NuxtImg
+              v-if="getListingCardImage(sponsoredVendor)"
+              :src="getListingCardImage(sponsoredVendor)!.src"
+              :alt="getListingCardImage(sponsoredVendor)!.alt?.[L] || sponsoredVendor.name[L]"
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="800"
+              sizes="100vw lg:50vw"
+              format="webp"
+              @error="useListingImageFallback"
+          />
+        </div>
 
         <div class="sponsored__body">
           <div class="sponsored__top">
@@ -103,11 +116,15 @@ function vendorTo(vendor: VendorListing) {
 .sponsored__media {
   min-height: clamp(13rem, 22vw, 18rem);
   border-radius: var(--radius-sm);
-  background:
-    linear-gradient(135deg, rgba(180, 87, 55, 0.16), rgba(110, 139, 121, 0.22)),
-    url("/images/vendors-hero-san-miguel.jpg");
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(135deg, rgba(180, 87, 55, 0.16), rgba(110, 139, 121, 0.22));
+}
+
+.sponsored__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
 }
 
 .sponsored__body {
@@ -174,4 +191,17 @@ function vendorTo(vendor: VendorListing) {
     padding: 0;
   }
 }
+</style>
+
+<style scoped>
+.sponsored { padding: clamp(2.5rem, 5vw, 4rem) 0; background: #151412; }
+.sponsored__card { grid-template-columns: minmax(15rem, 0.8fr) minmax(0, 1.2fr); gap: 0; max-width: 68rem; margin-inline: auto; padding: 0; border: 1px solid #55514b; border-radius: 0; background: transparent; box-shadow: none; }
+.sponsored__card:hover { transform: none; box-shadow: none; }
+.sponsored__media { min-height: clamp(15rem, 22vw, 18rem); border-radius: 0; }
+.sponsored__body { padding: clamp(1.5rem, 3vw, 2.75rem); }
+.sponsored__category, .badge--sponsored { color: #d4a58f; background: transparent; border: 0; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.sponsored__title { color: #fff; font-size: clamp(1.9rem, 3.2vw, 3rem); line-height: 1; }
+.sponsored__text { color: #c4c0b8; }
+.sponsored__cta { color: #fff; border-bottom: 1px solid #777; padding-bottom: 0.25rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+@media (max-width: 760px) { .sponsored { padding-block: 2rem; } .sponsored__card { grid-template-columns: 1fr; } .sponsored__media { min-height: 14rem; } .sponsored__body { padding: 1.5rem 1.25rem; } }
 </style>

@@ -34,14 +34,57 @@ export const STATIONERY: VendorListing[] = [
         images: [
             {
                 type: "hero",
-                src: "/images/vendors/stationery/amatl-hero.jpg",
+                src: "/images/vendors/stationery/amatl-handmade-paper-studio/amatl-prints.png",
                 alt: {
-                    en: "Handmade wedding invitation suite on textured paper with botanicals",
-                    es: "Suite de invitación de boda en papel artesanal con botánicos"
+                    en: "Minimal wedding invitations displayed with textured handmade paper",
+                    es: "Invitaciones de boda minimalistas exhibidas con papel artesanal texturizado"
                 },
-                credit: "Courtesy of Amatl Handmade Paper Studio",
-                sourceUrl: "https://amatlpaper.studio",
-                licenseNote: "Replace with licensed press image."
+                credit: "Courtesy of Amatl Handmade Paper Studio"
+            },
+            {
+                type: "detail",
+                src: "/images/vendors/stationery/amatl-handmade-paper-studio/amatl-invites-1.png",
+                alt: {
+                    en: "Deckle-edge handmade save-the-date cards with subtle botanical fibers",
+                    es: "Tarjetas save the date hechas a mano con bordes irregulares y fibras botánicas sutiles"
+                },
+                credit: "Courtesy of Amatl Handmade Paper Studio"
+            },
+            {
+                type: "detail",
+                src: "/images/vendors/stationery/amatl-handmade-paper-studio/amatl-marigold-stationary.png",
+                alt: {
+                    en: "Handmade stationery and envelopes embedded with marigold petals",
+                    es: "Papelería y sobres hechos a mano con pétalos de cempasúchil incorporados"
+                },
+                credit: "Courtesy of Amatl Handmade Paper Studio"
+            },
+            {
+                type: "detail",
+                src: "/images/vendors/stationery/amatl-handmade-paper-studio/amatl-startionary-1.png",
+                alt: {
+                    en: "Handmade gray wedding envelopes and stationery with deckled edges",
+                    es: "Sobres y papelería de boda gris hechos a mano con bordes irregulares"
+                },
+                credit: "Courtesy of Amatl Handmade Paper Studio"
+            },
+            {
+                type: "detail",
+                src: "/images/vendors/stationery/amatl-handmade-paper-studio/amatl-work-2.png",
+                alt: {
+                    en: "Artisan lifting a freshly formed sheet of handmade paper from a mold",
+                    es: "Artesana levantando una hoja de papel recién formada de un molde"
+                },
+                credit: "Courtesy of Amatl Handmade Paper Studio"
+            },
+            {
+                type: "detail",
+                src: "/images/vendors/stationery/amatl-handmade-paper-studio/amatl-marigold-letters.png",
+                alt: {
+                    en: "Close-up of deckle-edge handmade cards with marigold-petal inclusions",
+                    es: "Detalle de tarjetas artesanales con bordes irregulares e inclusiones de cempasúchil"
+                },
+                credit: "Courtesy of Amatl Handmade Paper Studio"
             }
         ]
     },

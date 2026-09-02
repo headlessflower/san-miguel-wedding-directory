@@ -2,6 +2,11 @@
   <main class="blog">
     <section class="blog__section">
       <div class="container">
+        <header class="blog__masthead">
+          <p>{{ L === "es" ? "Ideas, lugares y consejos locales" : "Ideas, places, and local advice" }}</p>
+          <h1>{{ L === "es" ? "El diario de bodas" : "The Wedding Journal" }}</h1>
+        </header>
+
         <div v-if="pending" class="blog__loading">
           {{ L === "es" ? "Cargando…" : "Loading…" }}
         </div>

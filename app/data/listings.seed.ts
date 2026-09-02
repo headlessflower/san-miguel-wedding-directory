@@ -1,10 +1,12 @@
 // app/data/listings.seed.ts
 export * from "./listings/types";
 
-import { SEED_VENUES } from "./listings/venues.seed";
-import { SEED_VENDORS } from "./listings/vendors";
+import { SEED_VENUES as RAW_VENUES } from "./listings/venues.seed";
+import { SEED_VENDORS as RAW_VENDORS } from "./listings/vendors";
+import { withGalleryImages } from "./listings/gallery";
 
-export { SEED_VENUES, SEED_VENDORS };
+export const SEED_VENUES = RAW_VENUES.map(withGalleryImages);
+export const SEED_VENDORS = RAW_VENDORS.map(withGalleryImages);
 
 if (import.meta.dev) {
   const ids = new Set<string>();
